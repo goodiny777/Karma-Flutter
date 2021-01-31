@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:karma/general/db.dart';
 import 'package:karma/models/deed.dart';
-import 'package:karma/screens/alarms.dart';
 import 'package:karma/screens/statistics.dart';
 import 'package:karma/views/backup_dialog.dart';
 import 'package:karma/views/contact_us_dialog.dart';
+import 'package:karma/views/deed_dialog.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key}) : super(key: key);
@@ -21,6 +21,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         key: widget._drawerKey,
         drawer: Drawer(
           child: ListView(
@@ -53,19 +54,19 @@ class _MyHomePageState extends State<MyHomePage> {
                       builder: (context) => StatisticsWidget()));
                 },
               ),
-              ListTile(
-                leading: Image(
-                  image: AssetImage("assets/images/alarm.png"),
-                  width: 25,
-                  height: 25,
-                ),
-                title: Text("Alarms"),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => AlarmsWidget()));
-                },
-              ),
+              // ListTile(
+              //   leading: Image(
+              //     image: AssetImage("assets/images/alarm.png"),
+              //     width: 25,
+              //     height: 25,
+              //   ),
+              //   title: Text("Alarms"),
+              //   onTap: () {
+              //     Navigator.pop(context);
+              //     Navigator.of(context).push(
+              //         MaterialPageRoute(builder: (context) => AlarmsWidget()));
+              //   },
+              // ),
               ListTile(
                 leading: Image(
                   image: AssetImage("assets/images/share.png"),
@@ -200,16 +201,19 @@ class _MyHomePageState extends State<MyHomePage> {
                   if (widget.canAction)
                     {
                       widget.canAction = false,
-                      widget._dbProvider.newDeed(Deed(
-                          id: 1,
-                          description: "",
-                          type: false,
-                          value: 5,
-                          date: DateTime.now())),
-                      Future.delayed(Duration(seconds: 1), () {
-                        setState(() {});
-                        widget.canAction = true;
-                      }),
+                      showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (BuildContext context) {
+                            return DeedDialog(
+                                type: false,
+                                onConfirm: () => {
+                                      Future.delayed(Duration(seconds: 1), () {
+                                        setState(() {});
+                                        widget.canAction = true;
+                                      }),
+                                    });
+                          }),
                     }
                 },
                 child: Icon(Icons.remove_circle_outline_outlined,
@@ -225,16 +229,19 @@ class _MyHomePageState extends State<MyHomePage> {
                   if (widget.canAction)
                     {
                       widget.canAction = false,
-                      widget._dbProvider.newDeed(Deed(
-                          id: 1,
-                          description: "",
-                          type: true,
-                          value: 5,
-                          date: DateTime.now())),
-                      Future.delayed(Duration(seconds: 1), () {
-                        setState(() {});
-                        widget.canAction = true;
-                      }),
+                      showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (BuildContext context) {
+                            return DeedDialog(
+                                type: true,
+                                onConfirm: () => {
+                                      Future.delayed(Duration(seconds: 1), () {
+                                        setState(() {});
+                                        widget.canAction = true;
+                                      }),
+                                    });
+                          }),
                     }
                 },
                 child: Icon(Icons.add_circle_outline, color: Colors.white),

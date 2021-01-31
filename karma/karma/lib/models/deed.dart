@@ -1,7 +1,3 @@
-import 'dart:convert';
-
-import 'package:karma/general/db.dart';
-
 class Deed {
   int id;
   String description;
@@ -25,14 +21,4 @@ class Deed {
         "value": value,
         "date": date.microsecondsSinceEpoch
       };
-}
-
-Deed clientFromJson(String str) {
-  final jsonData = json.decode(str);
-  return Deed.fromMap(jsonData);
-}
-
-String clientToJson(Deed data) {
-  final dyn = data.toMap();
-  return json.encode(dyn);
 }
