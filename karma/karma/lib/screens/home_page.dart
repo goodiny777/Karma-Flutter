@@ -145,11 +145,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   Deed item = snapshot.data[index];
                   Color color;
                   String deedTitle;
+                  deedTitle = item.name;
                   if (item.type) {
-                    deedTitle = "Good deed";
                     color = Colors.lightGreenAccent;
                   } else {
-                    deedTitle = "Bad deed";
                     color = Colors.redAccent;
                   }
                   return Dismissible(
@@ -208,12 +207,15 @@ class _MyHomePageState extends State<MyHomePage> {
                             return DeedDialog(
                                 type: false,
                                 onConfirm: () => {
-                                      Future.delayed(Duration(seconds: 1), () {
-                                        setState(() {});
-                                        widget.canAction = true;
-                                      }),
+                                      Future.delayed(
+                                          Duration(milliseconds: 500), () {
+                                        this.setState(() {});
+                                      })
                                     });
                           }),
+                      Future.delayed(Duration(seconds: 1), () {
+                        widget.canAction = true;
+                      }),
                     }
                 },
                 child: Icon(Icons.remove_circle_outline_outlined,
@@ -236,12 +238,15 @@ class _MyHomePageState extends State<MyHomePage> {
                             return DeedDialog(
                                 type: true,
                                 onConfirm: () => {
-                                      Future.delayed(Duration(seconds: 1), () {
-                                        setState(() {});
-                                        widget.canAction = true;
-                                      }),
+                                      Future.delayed(
+                                          Duration(milliseconds: 500), () {
+                                        this.setState(() {});
+                                      })
                                     });
                           }),
+                      Future.delayed(Duration(seconds: 1), () {
+                        widget.canAction = true;
+                      }),
                     }
                 },
                 child: Icon(Icons.add_circle_outline, color: Colors.white),

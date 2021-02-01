@@ -1,5 +1,6 @@
+import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:karma/general/db.dart';
+
 import 'screens/home_page.dart';
 
 void main() {
@@ -16,6 +17,13 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.lightGreen,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        home: MyHomePage());
+        home: AnimatedSplashScreen(
+            splash: Image.asset(
+              "assets/images/icon.png",
+              width: 500,
+              height: 500,
+            ),
+            backgroundColor: Colors.lightGreen,
+            nextScreen: MyHomePage()));
   }
 }

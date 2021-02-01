@@ -18,10 +18,11 @@ class DBProvider {
   initDB() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = documentsDirectory.path + "Deeds.db";
-    return await openDatabase(path, version: 1, onOpen: (db) {},
+    return await openDatabase(path, version: 2, onOpen: (db) {},
         onCreate: (Database db, int version) async {
       await db.execute("CREATE TABLE Deed ("
           "id INTEGER PRIMARY KEY,"
+          "name TEXT,"
           "description TEXT,"
           "type BIT,"
           "value INTEGER,"
@@ -36,10 +37,11 @@ class DBProvider {
     var table = await db.rawQuery("SELECT MAX(id)+1 as id FROM Deed");
     int id = table.first["id"];
     var raw = await db.rawInsert(
-        "INSERT Into Deed (id, description, type, value, date)"
-        " VALUES (?,?,?,?,?)",
+        "INSERT Into Deed (id, name, description, type, value, date)"
+        " VALUES (?,?,?,?,?,?)",
         [
           id,
+          newDeed.name,
           newDeed.description,
           newDeed.type,
           newDeed.value,

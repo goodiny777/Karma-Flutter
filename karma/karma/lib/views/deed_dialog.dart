@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:karma/general/db.dart';
 import 'package:karma/models/deed.dart';
 
@@ -9,16 +10,12 @@ class DeedDialog extends StatefulWidget {
   final bool type;
   final Function() onConfirm;
   final double _padding = 30.0;
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final DBProvider _dbProvider = DBProvider.db;
   DateTime dateTime;
   Color themeColor = Colors.red;
-  List<Color> _btnGradient = [
-    Colors.red.shade100,
-    Colors.red,
-    Colors.red.shade100
-  ];
 
   DeedDialog({Key key, this.type, this.onConfirm}) : super(key: key);
 
@@ -31,11 +28,6 @@ class _DeedDialogState extends State<DeedDialog> {
   Widget build(BuildContext context) {
     if (widget.type) {
       widget.themeColor = Colors.lightGreen;
-      widget._btnGradient = [
-        Colors.lightGreen.shade100,
-        Colors.lightGreen,
-        Colors.lightGreen.shade100
-      ];
     }
 
     return Theme(
@@ -52,6 +44,17 @@ class _DeedDialogState extends State<DeedDialog> {
         ),
       ),
     );
+  }
+
+  setDate(DateTime date) {
+    widget.dateTime = date;
+    widget._dateController.text = date.toIso8601String().split("T")[0];
+  }
+
+  setBorder() {
+    return OutlineInputBorder(
+        borderSide: BorderSide(color: widget.themeColor),
+        borderRadius: BorderRadius.all(Radius.circular(20.0)));
   }
 
   contentBox(context) {
@@ -76,25 +79,31 @@ class _DeedDialogState extends State<DeedDialog> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               TextField(
+                controller: widget._nameController,
+                textInputAction: TextInputAction.next,
                 textAlign: TextAlign.center,
                 decoration: new InputDecoration(
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(20.0))),
+                    enabledBorder: setBorder(),
+                    border: setBorder(),
                     hintText: "Name"),
               ),
               SizedBox(height: 8),
               GestureDetector(
                 child: TextField(
                   controller: widget._dateController,
-                  enabled: false,
+                  enableInteractiveSelection: false,
                   textAlign: TextAlign.center,
+                  enabled: false,
+                  style: TextStyle(),
+                  textInputAction: TextInputAction.next,
                   decoration: new InputDecoration(
-                      border: OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(20.0))),
-                      hintText: "Date"),
+                      disabledBorder: setBorder(),
+                      border: setBorder(),
+                      hintText: "Date",
+                      hintStyle: TextStyle(color: Colors.black54)),
                 ),
                 onTap: () {
+                  setDate(DateTime.now());
                   showModalBottomSheet(
                       context: context,
                       builder: (BuildContext builder) {
@@ -105,11 +114,7 @@ class _DeedDialogState extends State<DeedDialog> {
                             child: CupertinoDatePicker(
                               initialDateTime: DateTime.now(),
                               onDateTimeChanged: (DateTime newDate) {
-                                setState(() {
-                                  widget.dateTime = newDate;
-                                  widget._dateController.text =
-                                      newDate.toIso8601String().split("T")[0];
-                                });
+                                setDate(newDate);
                               },
                               minimumYear: 2000,
                               maximumYear: 2035,
@@ -127,10 +132,10 @@ class _DeedDialogState extends State<DeedDialog> {
                     textAlign: TextAlign.center,
                     minLines: 10,
                     maxLines: 10,
+                    textInputAction: TextInputAction.done,
                     decoration: new InputDecoration(
-                        border: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(20.0))),
+                        enabledBorder: setBorder(),
+                        border: setBorder(),
                         hintText: "Description")),
               ),
               SizedBox(height: 8),
@@ -140,14 +145,28 @@ class _DeedDialogState extends State<DeedDialog> {
                 highlightElevation: 4,
                 borderSide: BorderSide.none,
                 onPressed: () {
-                  widget._dbProvider.newDeed(Deed(
-                      id: 1,
-                      description: widget._descriptionController.text,
-                      type: widget.type,
-                      value: 5,
-                      date: widget.dateTime));
-                  widget.onConfirm();
-                  Navigator.pop(context);
+                  if (widget._descriptionController.text.isNotEmpty &&
+                      widget.dateTime != null &&
+                      widget._nameController.text.isNotEmpty) {
+                    widget._dbProvider.newDeed(Deed(
+                        id: 1,
+                        name: widget._nameController.text,
+                        description: widget._descriptionController.text,
+                        type: widget.type,
+                        value: 5,
+                        date: widget.dateTime));
+                    Navigator.pop(context);
+                    widget.onConfirm.call();
+                  } else {
+                    Fluttertoast.showToast(
+                        msg: "Missing info. Please fill all the fields",
+                        toastLength: Toast.LENGTH_LONG,
+                        gravity: ToastGravity.CENTER,
+                        timeInSecForIosWeb: 2,
+                        backgroundColor: Colors.redAccent,
+                        textColor: Colors.white,
+                        fontSize: 16.0);
+                  }
                 },
                 child: Container(
                     width: 180,
@@ -155,9 +174,7 @@ class _DeedDialogState extends State<DeedDialog> {
                     decoration: BoxDecoration(
                       shape: BoxShape.rectangle,
                       borderRadius: BorderRadius.circular(widget._padding),
-                      gradient: LinearGradient(
-                        colors: widget._btnGradient,
-                      ),
+                      color: widget.themeColor,
                     ),
                     padding: EdgeInsets.all(8.0),
                     alignment: Alignment.center,
