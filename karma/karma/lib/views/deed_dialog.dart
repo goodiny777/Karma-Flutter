@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:karma/general/db.dart';
@@ -14,8 +15,9 @@ class DeedDialog extends StatefulWidget {
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final DBProvider _dbProvider = DBProvider.db;
-  DateTime dateTime;
+  DateTime dateTime = DateTime.now();
   Color themeColor = Colors.red;
+  double _currentSliderValue = 5.0;
 
   DeedDialog({Key key, this.type, this.onConfirm}) : super(key: key);
 
@@ -61,6 +63,7 @@ class _DeedDialogState extends State<DeedDialog> {
     return Stack(
       children: <Widget>[
         Container(
+          height: 520,
           padding: EdgeInsets.only(
               left: 20,
               top: widget._padding,
@@ -75,118 +78,139 @@ class _DeedDialogState extends State<DeedDialog> {
                 BoxShadow(
                     color: Colors.black, offset: Offset(0, 10), blurRadius: 10),
               ]),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              TextField(
-                controller: widget._nameController,
-                textInputAction: TextInputAction.next,
-                textAlign: TextAlign.center,
-                decoration: new InputDecoration(
-                    enabledBorder: setBorder(),
-                    border: setBorder(),
-                    hintText: "Name"),
-              ),
-              SizedBox(height: 8),
-              GestureDetector(
-                child: TextField(
-                  controller: widget._dateController,
-                  enableInteractiveSelection: false,
-                  textAlign: TextAlign.center,
-                  enabled: false,
-                  style: TextStyle(),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                TextField(
+                  controller: widget._nameController,
                   textInputAction: TextInputAction.next,
+                  textAlign: TextAlign.center,
                   decoration: new InputDecoration(
-                      disabledBorder: setBorder(),
+                      enabledBorder: setBorder(),
                       border: setBorder(),
-                      hintText: "Date",
-                      hintStyle: TextStyle(color: Colors.black54)),
+                      hintText: "Title"),
                 ),
-                onTap: () {
-                  setDate(DateTime.now());
-                  showModalBottomSheet(
-                      context: context,
-                      builder: (BuildContext builder) {
-                        return Container(
-                            height:
-                                MediaQuery.of(context).copyWith().size.height /
-                                    3,
-                            child: CupertinoDatePicker(
-                              initialDateTime: DateTime.now(),
-                              onDateTimeChanged: (DateTime newDate) {
-                                setDate(newDate);
-                              },
-                              minimumYear: 2000,
-                              maximumYear: 2035,
-                              mode: CupertinoDatePickerMode.date,
-                            ));
-                      });
-                },
-              ),
-              SizedBox(height: 8),
-              Container(
-                height: 100,
-                clipBehavior: Clip.none,
-                child: TextField(
-                    controller: widget._descriptionController,
+                SizedBox(height: 8),
+                GestureDetector(
+                  child: TextField(
+                    controller: widget._dateController,
+                    enableInteractiveSelection: false,
                     textAlign: TextAlign.center,
-                    minLines: 10,
-                    maxLines: 10,
-                    textInputAction: TextInputAction.done,
+                    enabled: false,
+                    style: TextStyle(),
+                    textInputAction: TextInputAction.next,
                     decoration: new InputDecoration(
-                        enabledBorder: setBorder(),
+                        disabledBorder: setBorder(),
                         border: setBorder(),
-                        hintText: "Description")),
-              ),
-              SizedBox(height: 8),
-              OutlineButton(
-                padding: EdgeInsets.all(0.0),
-                color: Colors.white,
-                highlightElevation: 4,
-                borderSide: BorderSide.none,
-                onPressed: () {
-                  if (widget._descriptionController.text.isNotEmpty &&
-                      widget.dateTime != null &&
-                      widget._nameController.text.isNotEmpty) {
-                    widget._dbProvider.newDeed(Deed(
-                        id: 1,
-                        name: widget._nameController.text,
-                        description: widget._descriptionController.text,
-                        type: widget.type,
-                        value: 5,
-                        date: widget.dateTime));
-                    Navigator.pop(context);
-                    widget.onConfirm.call();
-                  } else {
-                    Fluttertoast.showToast(
-                        msg: "Missing info. Please fill all the fields",
-                        toastLength: Toast.LENGTH_LONG,
-                        gravity: ToastGravity.CENTER,
-                        timeInSecForIosWeb: 2,
-                        backgroundColor: Colors.redAccent,
-                        textColor: Colors.white,
-                        fontSize: 16.0);
-                  }
-                },
-                child: Container(
-                    width: 180,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.rectangle,
-                      borderRadius: BorderRadius.circular(widget._padding),
-                      color: widget.themeColor,
-                    ),
-                    padding: EdgeInsets.all(8.0),
-                    alignment: Alignment.center,
-                    child: Text('Add',
-                        style: TextStyle(fontSize: 15, color: Colors.white))),
-              )
-            ],
+                        hintText: "Date",
+                        hintStyle: TextStyle(color: Colors.black54)),
+                  ),
+                  onTap: () {
+                    setDate(DateTime.now());
+                    showModalBottomSheet(
+                        context: context,
+                        builder: (BuildContext builder) {
+                          return Container(
+                              height: MediaQuery.of(context)
+                                      .copyWith()
+                                      .size
+                                      .height /
+                                  3,
+                              child: CupertinoDatePicker(
+                                initialDateTime: DateTime.now(),
+                                onDateTimeChanged: (DateTime newDate) {
+                                  setDate(newDate);
+                                },
+                                minimumYear: 2000,
+                                maximumYear: 2035,
+                                mode: CupertinoDatePickerMode.date,
+                              ));
+                        });
+                  },
+                ),
+                SizedBox(height: 8),
+                SliderTheme(
+                  data: SliderThemeData(
+                      valueIndicatorColor: widget.themeColor,
+                      valueIndicatorTextStyle: TextStyle(color: Colors.white)),
+                  child: Slider(
+                      value: widget._currentSliderValue,
+                      min: 0,
+                      max: 10,
+                      divisions: 10,
+                      label: widget._currentSliderValue.round().toString(),
+                      onChanged: (double value) {
+                        setState(() {
+                          widget._currentSliderValue = value;
+                        });
+                      }),
+                ),
+                SizedBox(height: 8),
+                Container(
+                  height: 100,
+                  clipBehavior: Clip.none,
+                  child: TextField(
+                      controller: widget._descriptionController,
+                      textAlign: TextAlign.center,
+                      minLines: 10,
+                      maxLines: 10,
+                      textInputAction: TextInputAction.done,
+                      decoration: new InputDecoration(
+                          enabledBorder: setBorder(),
+                          border: setBorder(),
+                          hintText: "Description")),
+                ),
+                SizedBox(height: 80),
+                OutlineButton(
+                  padding: EdgeInsets.all(0.0),
+                  color: Colors.white,
+                  highlightElevation: 4,
+                  borderSide: BorderSide.none,
+                  onPressed: () {
+                    if (widget._descriptionController.text.isNotEmpty &&
+                        widget.dateTime != null &&
+                        widget._nameController.text.isNotEmpty) {
+                      widget._dbProvider.newDeed(Deed(
+                          id: 1,
+                          name: widget._nameController.text,
+                          description: widget._descriptionController.text,
+                          type: widget.type,
+                          value: widget._currentSliderValue.toInt(),
+                          date: widget.dateTime));
+                      Navigator.pop(context);
+                      widget.onConfirm.call();
+                    } else {
+                      Fluttertoast.showToast(
+                          msg: "Missing info. Please fill all the fields",
+                          toastLength: Toast.LENGTH_LONG,
+                          gravity: ToastGravity.CENTER,
+                          timeInSecForIosWeb: 2,
+                          backgroundColor: Colors.redAccent,
+                          textColor: Colors.white,
+                          fontSize: 16.0);
+                    }
+                  },
+                  child: Container(
+                      width: 180,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.rectangle,
+                        borderRadius: BorderRadius.circular(widget._padding),
+                        color: widget.themeColor,
+                      ),
+                      padding: EdgeInsets.all(8.0),
+                      alignment: Alignment.center,
+                      child: Text('Add',
+                          style: TextStyle(fontSize: 15, color: Colors.white))),
+                )
+              ],
+            ),
           ),
         ),
         Positioned(
-            left: 10,
-            top: 36,
+            left: 14,
+            top: 44,
             child: GestureDetector(
               child: Icon(Icons.close),
               onTap: () {

@@ -135,57 +135,113 @@ class _MyHomePageState extends State<MyHomePage> {
                 widget._drawerKey.currentState.openDrawer();
               }),
         ),
-        body: FutureBuilder<List<Deed>>(
-          future: widget._dbProvider.getAllDeeds(),
-          builder: (BuildContext context, AsyncSnapshot<List<Deed>> snapshot) {
-            if (snapshot.hasData) {
-              return ListView.builder(
-                itemCount: snapshot.data.length,
-                itemBuilder: (BuildContext context, int index) {
-                  Deed item = snapshot.data[index];
-                  Color color;
-                  String deedTitle;
-                  deedTitle = item.name;
-                  if (item.type) {
-                    color = Colors.lightGreenAccent;
-                  } else {
-                    color = Colors.redAccent;
-                  }
-                  return Dismissible(
-                    background: Container(color: Colors.red),
-                    key: UniqueKey(),
-                    onDismissed: (direction) {
-                      widget._dbProvider.deleteDeed(item.id);
-                    },
-                    child: Container(
-                      height: 100,
-                      margin: EdgeInsets.all(5),
-                      child: ListTile(
-                        title: Text(deedTitle),
-                        isThreeLine: true,
-                        subtitle: Text(
-                            "${item.description}\n${item.date.hour}:${item.date.minute}"),
-                      ),
-                      decoration: BoxDecoration(
-                        color: color,
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 5,
-                            blurRadius: 7,
-                            offset: Offset(0, 3), // changes position of shadow
+        body: Column(
+          // alignment: Alignment.topCenter,
+          children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.1,
+              width: MediaQuery.of(context).size.width,
+              child: FutureBuilder<List<DateTime>>(
+                future: widget._dbProvider.getAllDates(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<DateTime>> snapshot) {
+                  return ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: snapshot.data.length,
+                    // physics: CustomScrollPhysics(),
+                    itemBuilder: (BuildContext context, int index) {
+                      DateTime item = snapshot.data[index];
+                      return SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        child: ListTile(
+                          title: Center(
+                            child: Text(
+                              "${item.day < 10 ? "0" + item.day.toString() : item.day} ${item.month < 10 ? "0" + item.month.toString() : item.month} ${item.year}",
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
                           ),
-                        ],
-                      ),
-                    ),
+                          trailing: Icon(Icons.arrow_forward_ios),
+                          leading: Icon(Icons.arrow_back_ios),
+                        ),
+                      );
+                    },
                   );
                 },
-              );
-            } else {
-              return Center(child: CircularProgressIndicator());
-            }
-          },
+              ),
+            ),
+            Expanded(
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height * 0.9,
+                child: FutureBuilder<List<Deed>>(
+                  future: widget._dbProvider.getAllDeeds(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<List<Deed>> snapshot) {
+                    if (snapshot.hasData) {
+                      return ListView.builder(
+                        itemCount: snapshot.data.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          Deed item = snapshot.data[index];
+                          Color color;
+                          String imagePath;
+                          String deedTitle;
+                          deedTitle = item.name;
+                          if (item.type) {
+                            imagePath = "assets/images/good.png";
+                            color = Colors.lightGreenAccent;
+                          } else {
+                            imagePath = "assets/images/bad.png";
+                            color = Colors.redAccent;
+                          }
+                          return Dismissible(
+                            background: Container(color: Colors.red),
+                            key: UniqueKey(),
+                            onDismissed: (direction) {
+                              setState(() {
+                                widget._dbProvider.deleteDeed(item.id);
+                              });
+                            },
+                            child: Container(
+                              height: 100,
+                              margin: EdgeInsets.all(5),
+                              child: ListTile(
+                                title: Text(deedTitle),
+                                leading: Image(
+                                  image: AssetImage(imagePath),
+                                  color: color,
+                                ),
+                                trailing:
+                                    Text("Deed evaluation: ${item.value}"),
+                                isThreeLine: true,
+                                subtitle: Text(
+                                    "${item.description}\n${item.date.hour}:${item.date.minute}"),
+                              ),
+                              decoration: BoxDecoration(
+                                color: color.withAlpha(90),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20)),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 5,
+                                    blurRadius: 7,
+                                    offset: Offset(
+                                        0, 3), // changes position of shadow
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    } else {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                  },
+                ),
+              ),
+            ),
+          ],
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: Padding(
@@ -254,5 +310,23 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           ),
         ));
+  }
+}
+
+class CustomScrollPhysics extends FixedExtentScrollPhysics {
+  const CustomScrollPhysics({ScrollPhysics parent}) : super(parent: parent);
+
+  @override
+  double get minFlingVelocity => double.infinity;
+
+  @override
+  double get maxFlingVelocity => double.infinity;
+
+  @override
+  double get minFlingDistance => double.infinity;
+
+  @override
+  CustomScrollPhysics applyTo(ScrollPhysics ancestor) {
+    return CustomScrollPhysics(parent: buildParent(ancestor));
   }
 }

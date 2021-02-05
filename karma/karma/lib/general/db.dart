@@ -58,6 +58,11 @@ class DBProvider {
     return list;
   }
 
+  Future<List<DateTime>> getAllDates() async {
+    return getAllDeeds()
+        .then((value) => value.map((e) => e.date).toSet().toList());
+  }
+
   getAllDeedsByDate(DateTime dateTime) async {
     final db = await database;
     var res = await db.query("Deed",
