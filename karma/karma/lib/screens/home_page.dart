@@ -217,12 +217,12 @@ class _MyHomePageState extends State<MyHomePage> {
                                     "${item.description}\n${item.date.hour}:${item.date.minute}"),
                               ),
                               decoration: BoxDecoration(
-                                color: color.withAlpha(90),
+                                color: Colors.white,
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(20)),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
+                                    color: color.withOpacity(0.5),
                                     spreadRadius: 5,
                                     blurRadius: 7,
                                     offset: Offset(
