@@ -8,9 +8,8 @@ final FlutterLocalNotificationsPlugin notificationsPlugin =
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   var initializationAndroidSettings =
-      AndroidInitializationSettings("defaultIcon");
+      AndroidInitializationSettings('@drawable/ic_stat_icon');
   var initializationIosSettings = IOSInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,

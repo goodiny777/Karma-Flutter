@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:karma/general/db.dart';
 import 'package:karma/models/deed.dart';
-import 'package:karma/screens/statistics.dart';
+import 'package:karma/screens/statistics_page.dart';
 import 'package:karma/views/backup_dialog.dart';
 import 'package:karma/views/contact_us_dialog.dart';
 import 'package:karma/views/deed_dialog.dart';
 
-import 'alarms.dart';
+import 'alarms_page.dart';
 
 // ignore: must_be_immutable
 class MyHomePage extends StatefulWidget {
@@ -151,7 +151,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     AsyncSnapshot<List<DateTime>> snapshot) {
                   return ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount: snapshot.data.length,
+                    itemCount: snapshot.data?.length ?? 0,
                     // physics: CustomScrollPhysics(),
                     itemBuilder: (BuildContext context, int index) {
                       DateTime item = snapshot.data[index];
