@@ -6,6 +6,9 @@ import 'package:karma/views/backup_dialog.dart';
 import 'package:karma/views/contact_us_dialog.dart';
 import 'package:karma/views/deed_dialog.dart';
 
+import 'alarms.dart';
+
+// ignore: must_be_immutable
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key}) : super(key: key);
 
@@ -54,19 +57,19 @@ class _MyHomePageState extends State<MyHomePage> {
                       builder: (context) => StatisticsWidget()));
                 },
               ),
-              // ListTile(
-              //   leading: Image(
-              //     image: AssetImage("assets/images/alarm.png"),
-              //     width: 25,
-              //     height: 25,
-              //   ),
-              //   title: Text("Alarms"),
-              //   onTap: () {
-              //     Navigator.pop(context);
-              //     Navigator.of(context).push(
-              //         MaterialPageRoute(builder: (context) => AlarmsWidget()));
-              //   },
-              // ),
+              ListTile(
+                leading: Image(
+                  image: AssetImage("assets/images/alarm.png"),
+                  width: 25,
+                  height: 25,
+                ),
+                title: Text("Alarms"),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => AlarmsWidget()));
+                },
+              ),
               ListTile(
                 leading: Image(
                   image: AssetImage("assets/images/share.png"),
@@ -133,6 +136,7 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icon(Icons.menu, color: Colors.white),
               onPressed: () {
                 widget._drawerKey.currentState.openDrawer();
+
               }),
         ),
         body: Column(

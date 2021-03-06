@@ -24,7 +24,9 @@ class _AlarmsState extends State<AlarmsWidget> {
             textAlign: TextAlign.center,
           )),
       body: Column(
-        children: [Text("Alarms")],
+        children: [
+
+        ],
       ),
     );
   }
