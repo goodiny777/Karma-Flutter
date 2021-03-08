@@ -1,12 +1,10 @@
-import 'dart:developer';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:karma/general/alarm_helper.dart';
+import 'package:karma/general/db.dart';
 import 'package:karma/models/alarm.dart';
-import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/timezone.dart';
 
 import '../main.dart';
@@ -21,7 +19,7 @@ class AlarmsWidget extends StatefulWidget {
 class _AlarmsState extends State<AlarmsWidget> {
   DateTime _alarmTime;
   String _alarmTimeString;
-  AlarmHelper _alarmHelper = AlarmHelper();
+  DBProvider _alarmHelper = DBProvider.db;
   Future<List<AlarmInfo>> _alarms;
   List<AlarmInfo> _currentAlarms;
 
@@ -73,12 +71,12 @@ class _AlarmsState extends State<AlarmsWidget> {
       'alarm_notif',
       'Channel for Alarm notification',
       icon: '@drawable/ic_stat_icon',
-      sound: RawResourceAndroidNotificationSound('@drawable/ic_stat_icon'),
-      largeIcon: DrawableResourceAndroidBitmap('@drawable/ic_stat_icon'),
+      largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
     );
 
     var iOSPlatformChannelSpecifics = IOSNotificationDetails(
         presentAlert: true, presentBadge: true, presentSound: true);
+
     var platformChannelSpecifics = NotificationDetails(
         android: androidPlatformChannelSpecifics,
         iOS: iOSPlatformChannelSpecifics);
@@ -92,9 +90,8 @@ class _AlarmsState extends State<AlarmsWidget> {
         TZDateTime.from(
             scheduledNotificationDateTime,
             tz.timeZoneDatabase.locations.values.firstWhere((element) =>
-            // ignore: unrelated_type_equality_checks
-            element.currentTimeZone.offset / 1000 / 60 ~/ 60 ==
-                DateTime.now().timeZoneOffset.inHours)),
+                element.currentTimeZone.offset.toInt() ==
+                DateTime.now().timeZoneOffset.inMilliseconds)),
         platformChannelSpecifics,
         androidAllowWhileIdle: true,
         uiLocalNotificationDateInterpretation:

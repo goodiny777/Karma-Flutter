@@ -172,7 +172,6 @@ class _DeedDialogState extends State<DeedDialog> {
                         widget.dateTime != null &&
                         widget._nameController.text.isNotEmpty) {
                       widget._dbProvider.newDeed(Deed(
-                          id: 1,
                           name: widget._nameController.text,
                           description: widget._descriptionController.text,
                           type: widget.type,

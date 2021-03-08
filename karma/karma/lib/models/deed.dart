@@ -1,3 +1,11 @@
+final String tableDeed = 'Deed';
+final String columnDeedId = 'id';
+final String columnName = 'name';
+final String columnDescription = 'description';
+final String columnType = 'type';
+final String columnValue = 'value';
+final String columnDate = 'date';
+
 class Deed {
   int id;
   String name;
