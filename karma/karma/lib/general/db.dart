@@ -33,12 +33,12 @@ class DBProvider {
           ")");
 
       await db.execute('''
-          create table $tableAlarm ( 
+          CREATE TABLE $tableAlarm ( 
           $columnId integer primary key autoincrement, 
-          $columnTitle text not null,
-          $columnDateTime text not null,
-          $columnPending integer,
-          $columnColorIndex integer)
+          $columnTitle TEXT,
+          $columnDateTime TEXT,
+          $columnPending INTEGER,
+          $columnColorIndex INTEGER)
         ''');
     });
   }
@@ -46,7 +46,6 @@ class DBProvider {
 //region Deed
   void newDeed(Deed newDeed) async {
     final db = await database;
-    var table = await db.rawQuery("SELECT MAX(id)+1 as id FROM Deed");
     await db.insert(tableDeed, newDeed.toMap());
   }
 
@@ -90,15 +89,15 @@ class DBProvider {
 //endregion
 
 //region Alarm
-  void insertAlarm(AlarmInfo alarmInfo) async {
-    var db = await this.database;
-    await db.insert(tableAlarm, alarmInfo.toMap());
+  Future<int> insertAlarm(AlarmInfo alarmInfo) async {
+    var db = await database;
+    return db.insert(tableAlarm, alarmInfo.toMap());
   }
 
   Future<List<AlarmInfo>> getAlarms() async {
     List<AlarmInfo> _alarms = [];
 
-    var db = await this.database;
+    var db = await database;
     var result = await db.query(tableAlarm);
     result.forEach((element) {
       var alarmInfo = AlarmInfo.fromMap(element);
@@ -109,7 +108,7 @@ class DBProvider {
   }
 
   Future<int> delete(int id) async {
-    var db = await this.database;
+    var db = await database;
     return await db.delete(tableAlarm, where: '$columnId = ?', whereArgs: [id]);
   }
 //endregion

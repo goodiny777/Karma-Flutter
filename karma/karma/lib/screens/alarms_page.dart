@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:karma/general/db.dart';
 import 'package:karma/models/alarm.dart';
+import 'package:karma/views/alarm_dialog.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/timezone.dart';
@@ -43,6 +44,17 @@ class _AlarmsState extends State<AlarmsWidget> {
         children: [
           MaterialButton(
             onPressed: () => {
+              showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (BuildContext context) {
+                    return AlarmDialog(
+                        onConfirm: (alarmId) => {
+                              Future.delayed(Duration(milliseconds: 500), () {
+                                this.setState(() {});
+                              })
+                            });
+                  }),
               scheduleAlarm(
                   DateTime.now().add(Duration(seconds: 15)),
                   AlarmInfo(

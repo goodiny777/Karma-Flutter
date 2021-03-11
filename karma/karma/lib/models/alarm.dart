@@ -1,4 +1,4 @@
-final String tableAlarm = 'alarm';
+final String tableAlarm = 'Alarm';
 final String columnId = 'id';
 final String columnTitle = 'title';
 final String columnDateTime = 'alarmDateTime';
