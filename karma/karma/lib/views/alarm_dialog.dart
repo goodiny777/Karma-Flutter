@@ -2,21 +2,23 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:karma/general/db.dart';
 import 'package:karma/models/alarm.dart';
 
 // ignore: must_be_immutable
 class AlarmDialog extends StatefulWidget {
-  final Function(int) onConfirm;
+  final Function(AlarmInfo)? onConfirm;
   final double _padding = 30.0;
-  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+
   final DBProvider _dbProvider = DBProvider.db;
   DateTime dateTime = DateTime.now();
-  Color themeColor = Colors.lightGreen;
+  Color themeColor = Colors.lightBlue;
 
-  AlarmDialog({Key key, this.onConfirm}) : super(key: key);
+  AlarmDialog({Key? key, AlarmInfo? alarmInfo, this.onConfirm}) : super(key: key);
 
   @override
   _AlarmDialogState createState() => _AlarmDialogState();
@@ -27,7 +29,7 @@ class _AlarmDialogState extends State<AlarmDialog> {
   Widget build(BuildContext context) {
     return Theme(
       data: ThemeData(
-        primarySwatch: widget.themeColor,
+        primarySwatch: Colors.lightBlue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       child: Dialog(
@@ -43,7 +45,7 @@ class _AlarmDialogState extends State<AlarmDialog> {
 
   setDate(DateTime date) {
     widget.dateTime = date;
-    widget._dateController.text = date.toIso8601String().split("T")[0];
+    widget._dateController.text = "${date.hour}:${date.minute}";
   }
 
   setBorder() {
@@ -56,7 +58,7 @@ class _AlarmDialogState extends State<AlarmDialog> {
     return Stack(
       children: <Widget>[
         Container(
-          height: 320,
+          height: 400,
           padding: EdgeInsets.only(
               left: 20,
               top: widget._padding,
@@ -75,16 +77,6 @@ class _AlarmDialogState extends State<AlarmDialog> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                TextField(
-                  controller: widget._nameController,
-                  textInputAction: TextInputAction.next,
-                  textAlign: TextAlign.center,
-                  decoration: new InputDecoration(
-                      enabledBorder: setBorder(),
-                      border: setBorder(),
-                      hintText: "Reminder title"),
-                ),
-                SizedBox(height: 8),
                 GestureDetector(
                   child: TextField(
                     controller: widget._dateController,
@@ -116,9 +108,25 @@ class _AlarmDialogState extends State<AlarmDialog> {
                                   setDate(newDate);
                                 },
                                 mode: CupertinoDatePickerMode.time,
+                                use24hFormat: true,
                               ));
                         });
                   },
+                ),
+                SizedBox(height: 8),
+                Container(
+                  height: 100,
+                  clipBehavior: Clip.none,
+                  child: TextField(
+                      controller: widget._descriptionController,
+                      textAlign: TextAlign.center,
+                      minLines: 10,
+                      maxLines: 10,
+                      textInputAction: TextInputAction.done,
+                      decoration: new InputDecoration(
+                          enabledBorder: setBorder(),
+                          border: setBorder(),
+                          hintText: "Reminder description")),
                 ),
                 SizedBox(height: 60),
                 OutlineButton(
@@ -127,16 +135,18 @@ class _AlarmDialogState extends State<AlarmDialog> {
                   highlightElevation: 4,
                   borderSide: BorderSide.none,
                   onPressed: () {
-                    if (widget._nameController.text.isNotEmpty &&
+                    if (widget._dateController.text.isNotEmpty &&
                         widget.dateTime != null) {
+                      var alarm = AlarmInfo(
+                          description: widget._descriptionController.text,
+                          alarmDateTime: widget.dateTime,
+                          isPending: true);
                       widget._dbProvider
-                          .insertAlarm(AlarmInfo(
-                              title: widget._nameController.text,
-                              alarmDateTime: widget.dateTime,
-                              isPending: true))
+                          .insertAlarm(alarm)
                           .then((value) => {
                                 Navigator.pop(context),
-                                widget.onConfirm.call(0)
+                                alarm.id = value,
+                                widget.onConfirm?.call(alarm)
                               });
                     } else {
                       Fluttertoast.showToast(

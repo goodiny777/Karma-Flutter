@@ -8,8 +8,8 @@ import 'package:karma/models/deed.dart';
 
 // ignore: must_be_immutable
 class DeedDialog extends StatefulWidget {
-  final bool type;
-  final Function() onConfirm;
+  final bool? type;
+  final Function()? onConfirm;
   final double _padding = 30.0;
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
@@ -19,7 +19,7 @@ class DeedDialog extends StatefulWidget {
   Color themeColor = Colors.red;
   double _currentSliderValue = 5.0;
 
-  DeedDialog({Key key, this.type, this.onConfirm}) : super(key: key);
+  DeedDialog({Key? key, this.type, this.onConfirm}) : super(key: key);
 
   @override
   _DeedDialogState createState() => _DeedDialogState();
@@ -28,13 +28,13 @@ class DeedDialog extends StatefulWidget {
 class _DeedDialogState extends State<DeedDialog> {
   @override
   Widget build(BuildContext context) {
-    if (widget.type) {
+    if (widget.type == true) {
       widget.themeColor = Colors.lightGreen;
     }
 
     return Theme(
       data: ThemeData(
-        primarySwatch: widget.themeColor,
+        primarySwatch: widget.themeColor as MaterialColor,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       child: Dialog(
@@ -178,7 +178,7 @@ class _DeedDialogState extends State<DeedDialog> {
                           value: widget._currentSliderValue.toInt(),
                           date: widget.dateTime));
                       Navigator.pop(context);
-                      widget.onConfirm.call();
+                      widget.onConfirm?.call();
                     } else {
                       Fluttertoast.showToast(
                           msg: "Missing info. Please fill all the fields",

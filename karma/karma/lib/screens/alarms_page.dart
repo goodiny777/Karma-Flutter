@@ -11,19 +11,15 @@ import 'package:timezone/timezone.dart';
 import '../main.dart';
 
 class AlarmsWidget extends StatefulWidget {
-  AlarmsWidget({Key key}) : super(key: key);
+  AlarmsWidget({Key? key}) : super(key: key);
+
+  final DBProvider db = DBProvider.db;
 
   @override
   _AlarmsState createState() => _AlarmsState();
 }
 
 class _AlarmsState extends State<AlarmsWidget> {
-  DateTime _alarmTime;
-  String _alarmTimeString;
-  DBProvider _alarmHelper = DBProvider.db;
-  Future<List<AlarmInfo>> _alarms;
-  List<AlarmInfo> _currentAlarms;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,45 +38,108 @@ class _AlarmsState extends State<AlarmsWidget> {
           )),
       body: Column(
         children: [
-          MaterialButton(
-            onPressed: () => {
-              showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: (BuildContext context) {
-                    return AlarmDialog(
-                        onConfirm: (alarmId) => {
-                              Future.delayed(Duration(milliseconds: 500), () {
-                                this.setState(() {});
-                              })
+          SizedBox(height: 8),
+          Expanded(
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height,
+              child: FutureBuilder<List<AlarmInfo>>(
+                future: widget.db.getAlarms(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<AlarmInfo>> snapshot) {
+                  print(snapshot);
+                  if (snapshot.hasData) {
+                    return ListView.builder(
+                      itemCount: snapshot.data?.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        AlarmInfo? item = snapshot.data?[index];
+                        return Dismissible(
+                          background: Container(color: Colors.red),
+                          key: UniqueKey(),
+                          onDismissed: (direction) {
+                            setState(() {
+                              widget.db.deleteAlarm(item?.id ?? -1);
                             });
-                  }),
-              scheduleAlarm(
-                  DateTime.now().add(Duration(seconds: 15)),
-                  AlarmInfo(
-                      id: 0,
-                      title: "Hello",
-                      alarmDateTime: DateTime.now().add(Duration(seconds: 15)),
-                      isPending: true,
-                      gradientColorIndex: 1))
-            },
-            child: Text(("Press")),
-          )
+                          },
+                          child: GestureDetector(
+                            child: Container(
+                              height: 100,
+                              margin: EdgeInsets.all(5),
+                              child: ListTile(
+                                title: Text(item?.description ?? ""),
+                                subtitle: Text(
+                                    "${item?.alarmDateTime?.hour}:${item?.alarmDateTime?.minute}"),
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20)),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.lightBlue.withOpacity(0.5),
+                                    spreadRadius: 5,
+                                    blurRadius: 7,
+                                    offset: Offset(
+                                        0, 3), // changes position of shadow
+                                  ),
+                                ],
+                              ),
+                            ),
+                            onTap: () => {
+                              showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (BuildContext context) {
+                                    return AlarmDialog(
+                                        alarmInfo: item,
+                                        onConfirm: (alarm) => {
+                                              Future.delayed(
+                                                  Duration(milliseconds: 500),
+                                                  () {
+                                                this.setState(() {});
+                                                scheduleAlarm(alarm);
+                                              })
+                                            });
+                                  }),
+                            },
+                          ),
+                        );
+                      },
+                    );
+                  } else {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                },
+              ),
+            ),
+          ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => {
+          showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (BuildContext context) {
+                return AlarmDialog(
+                    alarmInfo: null,
+                    onConfirm: (alarm) => {
+                          Future.delayed(Duration(milliseconds: 500), () {
+                            this.setState(() {});
+                            scheduleAlarm(alarm);
+                          })
+                        });
+              }),
+        },
+        child: Icon(Icons.alarm_add, color: Colors.white),
+        backgroundColor: Colors.lightBlue,
       ),
     );
   }
 
-  void loadAlarms() {
-    _alarms = _alarmHelper.getAlarms();
-    if (mounted) setState(() {});
-  }
-
-  void scheduleAlarm(
-      DateTime scheduledNotificationDateTime, AlarmInfo alarmInfo) async {
+  void scheduleAlarm(AlarmInfo alarmInfo) async {
     var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-      'alarm_notif',
-      'alarm_notif',
+      'alarm_notification',
+      'alarm_notification',
       'Channel for Alarm notification',
       icon: '@drawable/ic_stat_icon',
       largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
@@ -96,11 +155,11 @@ class _AlarmsState extends State<AlarmsWidget> {
     tz.initializeTimeZones();
 
     await notificationsPlugin.zonedSchedule(
-        0,
-        'Office',
-        alarmInfo.title,
+        alarmInfo.id,
+        'Karma',
+        alarmInfo.description,
         TZDateTime.from(
-            scheduledNotificationDateTime,
+            alarmInfo.alarmDateTime,
             tz.timeZoneDatabase.locations.values.firstWhere((element) =>
                 element.currentTimeZone.offset.toInt() ==
                 DateTime.now().timeZoneOffset.inMilliseconds)),
@@ -108,29 +167,5 @@ class _AlarmsState extends State<AlarmsWidget> {
         androidAllowWhileIdle: true,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime);
-  }
-
-  void onSaveAlarm() {
-    DateTime scheduleAlarmDateTime;
-    if (_alarmTime.isAfter(DateTime.now()))
-      scheduleAlarmDateTime = _alarmTime;
-    else
-      scheduleAlarmDateTime = _alarmTime.add(Duration(seconds: 15));
-
-    var alarmInfo = AlarmInfo(
-      alarmDateTime: scheduleAlarmDateTime,
-      gradientColorIndex: _currentAlarms.length,
-      title: 'alarm',
-    );
-    _alarmHelper.insertAlarm(alarmInfo);
-    scheduleAlarm(scheduleAlarmDateTime, alarmInfo);
-    Navigator.pop(context);
-    loadAlarms();
-  }
-
-  void deleteAlarm(int id) {
-    _alarmHelper.delete(id);
-    //unsubscribe for notification
-    loadAlarms();
   }
 }

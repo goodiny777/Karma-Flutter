@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class StatisticsWidget extends StatefulWidget {
-  StatisticsWidget({Key key, this.title}) : super(key: key);
-  final String title;
+  StatisticsWidget({Key? key, this.title}) : super(key: key);
+  final String? title;
 
   @override
   _StatisticsState createState() => _StatisticsState();

@@ -11,8 +11,8 @@ class DBProvider {
 
   static final DBProvider db = DBProvider._();
 
-  static Database _database;
-  Future<Database> get database async {
+  static Database? _database;
+  Future<Database?> get database async {
     if (_database != null) return _database;
     _database = await initDB();
     return _database;
@@ -35,10 +35,9 @@ class DBProvider {
       await db.execute('''
           CREATE TABLE $tableAlarm ( 
           $columnId integer primary key autoincrement, 
-          $columnTitle TEXT,
+          $columnAlarmDescription TEXT,
           $columnDateTime TEXT,
-          $columnPending INTEGER,
-          $columnColorIndex INTEGER)
+          $columnPending BIT)
         ''');
     });
   }
@@ -46,60 +45,60 @@ class DBProvider {
 //region Deed
   void newDeed(Deed newDeed) async {
     final db = await database;
-    await db.insert(tableDeed, newDeed.toMap());
+    await db?.insert(tableDeed, newDeed.toMap());
   }
 
   Future<List<Deed>> getAllDeeds() async {
     final db = await database;
-    var res = await db.query("Deed");
+    var res = await db?.query("Deed");
     List<Deed> list =
-        res.isNotEmpty ? res.map((c) => Deed.fromMap(c)).toList() : [];
+        (res?.isNotEmpty == true ? res?.map((c) => Deed.fromMap(c)).toList() : [])!;
     return list;
   }
 
-  Future<List<DateTime>> getAllDates() async {
+  Future<List<DateTime?>> getAllDates() async {
     return getAllDeeds()
         .then((value) => value.map((e) => e.date).toSet().toList());
   }
 
   getAllDeedsByDate(DateTime dateTime) async {
     final db = await database;
-    var res = await db.query("Deed",
+    var res = await db?.query("Deed",
         where: "date = ?", whereArgs: [dateTime.microsecondsSinceEpoch]);
-    List<Deed> list =
-        res.isNotEmpty ? res.map((c) => Deed.fromMap(c)).toList() : [];
+    List<Deed>? list =
+        res?.isNotEmpty == true ? res?.map((c) => Deed.fromMap(c)).toList() : [];
     return list;
   }
 
   void updateDeed(Deed newDeed) async {
     final db = await database;
-    await db.update("Deed", newDeed.toMap(),
+    await db?.update("Deed", newDeed.toMap(),
         where: "id = ?", whereArgs: [newDeed.id]);
   }
 
   void deleteDeed(int id) async {
     final db = await database;
-    await db.delete("Deed", where: "id = ?", whereArgs: [id]);
+    await db?.delete("Deed", where: "id = ?", whereArgs: [id]);
   }
 
   void deleteAll() async {
     final db = await database;
-    await db.rawDelete("Delete * from Client");
+    await db?.rawDelete("Delete * from Client");
   }
 //endregion
 
 //region Alarm
-  Future<int> insertAlarm(AlarmInfo alarmInfo) async {
+  Future<int?> insertAlarm(AlarmInfo alarmInfo) async {
     var db = await database;
-    return db.insert(tableAlarm, alarmInfo.toMap());
+    return db?.insert(tableAlarm, alarmInfo.toMap());
   }
 
   Future<List<AlarmInfo>> getAlarms() async {
     List<AlarmInfo> _alarms = [];
 
     var db = await database;
-    var result = await db.query(tableAlarm);
-    result.forEach((element) {
+    var result = await db?.query(tableAlarm);
+    result?.forEach((element) {
       var alarmInfo = AlarmInfo.fromMap(element);
       _alarms.add(alarmInfo);
     });
@@ -107,9 +106,9 @@ class DBProvider {
     return _alarms;
   }
 
-  Future<int> delete(int id) async {
+  Future<int?> deleteAlarm(int id) async {
     var db = await database;
-    return await db.delete(tableAlarm, where: '$columnId = ?', whereArgs: [id]);
+    return await db?.delete(tableAlarm, where: '$columnId = ?', whereArgs: [id]);
   }
 //endregion
 }

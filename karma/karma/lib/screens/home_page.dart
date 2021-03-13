@@ -10,7 +10,7 @@ import 'alarms_page.dart';
 
 // ignore: must_be_immutable
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key}) : super(key: key);
+  MyHomePage({Key? key}) : super(key: key);
 
   final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
   final DBProvider _dbProvider = DBProvider.db;
@@ -135,32 +135,44 @@ class _MyHomePageState extends State<MyHomePage> {
               alignment: Alignment.centerRight,
               icon: Icon(Icons.menu, color: Colors.white),
               onPressed: () {
-                widget._drawerKey.currentState.openDrawer();
-
+                widget._drawerKey.currentState?.openDrawer();
               }),
         ),
         body: Column(
           // alignment: Alignment.topCenter,
           children: [
             SizedBox(
-              height: MediaQuery.of(context).size.height * 0.1,
-              width: MediaQuery.of(context).size.width,
-              child: FutureBuilder<List<DateTime>>(
+              height: MediaQuery
+                  .of(context)
+                  .size
+                  .height * 0.1,
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width,
+              child: FutureBuilder<List<DateTime?>>(
                 future: widget._dbProvider.getAllDates(),
                 builder: (BuildContext context,
-                    AsyncSnapshot<List<DateTime>> snapshot) {
+                    AsyncSnapshot<List<DateTime?>> snapshot) {
                   return ListView.builder(
                     scrollDirection: Axis.horizontal,
                     itemCount: snapshot.data?.length ?? 0,
                     // physics: CustomScrollPhysics(),
                     itemBuilder: (BuildContext context, int index) {
-                      DateTime item = snapshot.data[index];
+                      DateTime? item = snapshot.data ? [index];
                       return SizedBox(
-                        width: MediaQuery.of(context).size.width,
+                        width: MediaQuery
+                            .of(context)
+                            .size
+                            .width,
                         child: ListTile(
                           title: Center(
                             child: Text(
-                              "${item.day < 10 ? "0" + item.day.toString() : item.day} ${item.month < 10 ? "0" + item.month.toString() : item.month} ${item.year}",
+                              "${(item?.day ?? 0) < 10 ? "0" +
+                                  (item?.day.toString() ?? "") : item
+                                  ?.day} ${(item?.month ?? 0) < 10 ? "0" +
+                                  (item?.month.toString() ?? "") : (item
+                                  ?.month ?? 0)} ${(item?.year ?? 0)}",
                               style: TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.bold),
                             ),
@@ -176,21 +188,24 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Expanded(
               child: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.9,
+                height: MediaQuery
+                    .of(context)
+                    .size
+                    .height * 0.9,
                 child: FutureBuilder<List<Deed>>(
                   future: widget._dbProvider.getAllDeeds(),
                   builder: (BuildContext context,
                       AsyncSnapshot<List<Deed>> snapshot) {
                     if (snapshot.hasData) {
                       return ListView.builder(
-                        itemCount: snapshot.data.length,
+                        itemCount: snapshot.data?.length,
                         itemBuilder: (BuildContext context, int index) {
-                          Deed item = snapshot.data[index];
+                          Deed? item = snapshot.data?[index];
                           Color color;
                           String imagePath;
-                          String deedTitle;
-                          deedTitle = item.name;
-                          if (item.type) {
+                          String? deedTitle;
+                          deedTitle = item?.name;
+                          if (item?.type == true) {
                             imagePath = "assets/images/good.png";
                             color = Colors.lightGreenAccent;
                           } else {
@@ -202,28 +217,28 @@ class _MyHomePageState extends State<MyHomePage> {
                             key: UniqueKey(),
                             onDismissed: (direction) {
                               setState(() {
-                                widget._dbProvider.deleteDeed(item.id);
+                                widget._dbProvider.deleteDeed(item?.id ?? -1);
                               });
                             },
                             child: Container(
                               height: 100,
                               margin: EdgeInsets.all(5),
                               child: ListTile(
-                                title: Text(deedTitle),
+                                title: Text(deedTitle ?? ''),
                                 leading: Image(
                                   image: AssetImage(imagePath),
                                   color: color,
                                 ),
                                 trailing:
-                                    Text("Deed evaluation: ${item.value}"),
+                                Text("Deed evaluation: ${item?.value}"),
                                 isThreeLine: true,
                                 subtitle: Text(
-                                    "${item.description}\n${item.date.hour}:${item.date.minute}"),
+                                    "${item?.description}\n${item?.date?.hour}:${item?.date?.minute}"),
                               ),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius:
-                                    BorderRadius.all(Radius.circular(20)),
+                                BorderRadius.all(Radius.circular(20)),
                                 boxShadow: [
                                   BoxShadow(
                                     color: color.withOpacity(0.5),
@@ -255,8 +270,9 @@ class _MyHomePageState extends State<MyHomePage> {
             children: <Widget>[
               FloatingActionButton(
                 backgroundColor: Colors.redAccent,
-                heroTag: "btn",
-                onPressed: () => {
+                heroTag: "btnBad",
+                onPressed: () =>
+                {
                   if (widget.canAction)
                     {
                       widget.canAction = false,
@@ -266,12 +282,13 @@ class _MyHomePageState extends State<MyHomePage> {
                           builder: (BuildContext context) {
                             return DeedDialog(
                                 type: false,
-                                onConfirm: () => {
-                                      Future.delayed(
-                                          Duration(milliseconds: 500), () {
-                                        this.setState(() {});
-                                      })
-                                    });
+                                onConfirm: () =>
+                                {
+                                  Future.delayed(
+                                      Duration(milliseconds: 500), () {
+                                    this.setState(() {});
+                                  })
+                                });
                           }),
                       Future.delayed(Duration(seconds: 1), () {
                         widget.canAction = true;
@@ -286,8 +303,9 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               FloatingActionButton(
                 backgroundColor: Colors.lightGreen,
-                heroTag: "btn2",
-                onPressed: () => {
+                heroTag: "btnGood",
+                onPressed: () =>
+                {
                   if (widget.canAction)
                     {
                       widget.canAction = false,
@@ -297,12 +315,13 @@ class _MyHomePageState extends State<MyHomePage> {
                           builder: (BuildContext context) {
                             return DeedDialog(
                                 type: true,
-                                onConfirm: () => {
-                                      Future.delayed(
-                                          Duration(milliseconds: 500), () {
-                                        this.setState(() {});
-                                      })
-                                    });
+                                onConfirm: () =>
+                                {
+                                  Future.delayed(
+                                      Duration(milliseconds: 500), () {
+                                    this.setState(() {});
+                                  })
+                                });
                           }),
                       Future.delayed(Duration(seconds: 1), () {
                         widget.canAction = true;
@@ -318,7 +337,7 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class CustomScrollPhysics extends FixedExtentScrollPhysics {
-  const CustomScrollPhysics({ScrollPhysics parent}) : super(parent: parent);
+  const CustomScrollPhysics({ScrollPhysics? parent}) : super(parent: parent);
 
   @override
   double get minFlingVelocity => double.infinity;
@@ -330,7 +349,7 @@ class CustomScrollPhysics extends FixedExtentScrollPhysics {
   double get minFlingDistance => double.infinity;
 
   @override
-  CustomScrollPhysics applyTo(ScrollPhysics ancestor) {
+  CustomScrollPhysics applyTo(ScrollPhysics? ancestor) {
     return CustomScrollPhysics(parent: buildParent(ancestor));
   }
 }

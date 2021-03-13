@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class BackupDialog extends StatefulWidget {
-  final String title, descriptions, text;
-  final Image img;
+  final String? title, descriptions, text;
+  final Image? img;
   final double _padding = 20.0;
 
   const BackupDialog(
-      {Key key, this.title, this.descriptions, this.text, this.img})
+      {Key? key, this.title, this.descriptions, this.text, this.img})
       : super(key: key);
 
   @override
