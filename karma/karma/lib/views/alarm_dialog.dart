@@ -11,6 +11,7 @@ import 'package:karma/models/alarm.dart';
 class AlarmDialog extends StatefulWidget {
   final Function(AlarmInfo)? onConfirm;
   final double _padding = 30.0;
+  final double _radius = 16.0;
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
@@ -51,14 +52,14 @@ class _AlarmDialogState extends State<AlarmDialog> {
   setBorder() {
     return OutlineInputBorder(
         borderSide: BorderSide(color: widget.themeColor),
-        borderRadius: BorderRadius.all(Radius.circular(20.0)));
+        borderRadius: BorderRadius.all(Radius.circular(widget._radius)));
   }
 
   contentBox(context) {
     return Stack(
       children: <Widget>[
         Container(
-          height: 400,
+          height: 350,
           padding: EdgeInsets.only(
               left: 20,
               top: widget._padding,
@@ -68,7 +69,7 @@ class _AlarmDialogState extends State<AlarmDialog> {
           decoration: BoxDecoration(
               shape: BoxShape.rectangle,
               color: Colors.white,
-              borderRadius: BorderRadius.circular(widget._padding),
+              borderRadius: BorderRadius.circular(widget._radius),
               boxShadow: [
                 BoxShadow(
                     color: Colors.black, offset: Offset(0, 10), blurRadius: 10),
@@ -77,6 +78,7 @@ class _AlarmDialogState extends State<AlarmDialog> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
+                SizedBox(height: 8),
                 GestureDetector(
                   child: TextField(
                     controller: widget._dateController,
@@ -128,12 +130,8 @@ class _AlarmDialogState extends State<AlarmDialog> {
                           border: setBorder(),
                           hintText: "Reminder description")),
                 ),
-                SizedBox(height: 60),
-                OutlineButton(
-                  padding: EdgeInsets.all(0.0),
-                  color: Colors.white,
-                  highlightElevation: 4,
-                  borderSide: BorderSide.none,
+                SizedBox(height: 30),
+                OutlinedButton(
                   onPressed: () {
                     if (widget._dateController.text.isNotEmpty &&
                         widget.dateTime != null) {
@@ -159,15 +157,13 @@ class _AlarmDialogState extends State<AlarmDialog> {
                           fontSize: 16.0);
                     }
                   },
+                  style: OutlinedButton.styleFrom(
+                      padding: EdgeInsets.all(0.0),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(widget._radius)),
+                      backgroundColor: widget.themeColor),
                   child: Container(
-                      width: 180,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.rectangle,
-                        borderRadius: BorderRadius.circular(widget._padding),
-                        color: widget.themeColor,
-                      ),
-                      padding: EdgeInsets.all(8.0),
+                      height: 80,
                       alignment: Alignment.center,
                       child: Text('Add',
                           style: TextStyle(fontSize: 15, color: Colors.white))),

@@ -12,6 +12,7 @@ class DBProvider {
   static final DBProvider db = DBProvider._();
 
   static Database? _database;
+
   Future<Database?> get database async {
     if (_database != null) return _database;
     _database = await initDB();
@@ -23,23 +24,23 @@ class DBProvider {
     String path = documentsDirectory.path + "Deeds.db";
     return await openDatabase(path, version: 2, onOpen: (db) {},
         onCreate: (Database db, int version) async {
-      await db.execute("CREATE TABLE $tableDeed ("
-          "$columnDeedId integer primary key autoincrement,"
-          "$columnName TEXT,"
-          "$columnDescription TEXT,"
-          "$columnType BIT,"
-          "$columnValue INTEGER,"
-          "$columnDate BIGINT"
-          ")");
+          await db.execute("CREATE TABLE $tableDeed ("
+              "$columnDeedId integer primary key autoincrement,"
+              "$columnName TEXT,"
+              "$columnDescription TEXT,"
+              "$columnType BIT,"
+              "$columnValue INTEGER,"
+              "$columnDate BIGINT"
+              ")");
 
-      await db.execute('''
+          await db.execute('''
           CREATE TABLE $tableAlarm ( 
           $columnId integer primary key autoincrement, 
           $columnAlarmDescription TEXT,
           $columnDateTime TEXT,
           $columnPending BIT)
         ''');
-    });
+        });
   }
 
 //region Deed
@@ -52,13 +53,18 @@ class DBProvider {
     final db = await database;
     var res = await db?.query("Deed");
     List<Deed> list =
-        (res?.isNotEmpty == true ? res?.map((c) => Deed.fromMap(c)).toList() : [])!;
+    (res?.isNotEmpty == true ? res?.map((c) => Deed.fromMap(c)).toList() : [])!;
     return list;
   }
 
   Future<List<DateTime?>> getAllDates() async {
     return getAllDeeds()
-        .then((value) => value.map((e) => e.date).toSet().toList());
+        .then((value) {
+      var list = value.map((e) => e.date).toSet().toList();
+      list.sort((d1,d2) => d1?.compareTo(d2 ?? DateTime.now()) ?? 0);
+      return list;
+    }
+    );
   }
 
   getAllDeedsByDate(DateTime dateTime) async {
@@ -66,7 +72,7 @@ class DBProvider {
     var res = await db?.query("Deed",
         where: "date = ?", whereArgs: [dateTime.microsecondsSinceEpoch]);
     List<Deed>? list =
-        res?.isNotEmpty == true ? res?.map((c) => Deed.fromMap(c)).toList() : [];
+    res?.isNotEmpty == true ? res?.map((c) => Deed.fromMap(c)).toList() : [];
     return list;
   }
 
@@ -85,6 +91,7 @@ class DBProvider {
     final db = await database;
     await db?.rawDelete("Delete * from Client");
   }
+
 //endregion
 
 //region Alarm
@@ -108,7 +115,8 @@ class DBProvider {
 
   Future<int?> deleteAlarm(int id) async {
     var db = await database;
-    return await db?.delete(tableAlarm, where: '$columnId = ?', whereArgs: [id]);
+    return await db?.delete(
+        tableAlarm, where: '$columnId = ?', whereArgs: [id]);
   }
 //endregion
 }

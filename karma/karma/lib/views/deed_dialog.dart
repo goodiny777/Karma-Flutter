@@ -39,7 +39,6 @@ class _DeedDialogState extends State<DeedDialog> {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       child: Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         elevation: 0,
         backgroundColor: Colors.transparent,
         child: SingleChildScrollView(
@@ -74,7 +73,7 @@ class _DeedDialogState extends State<DeedDialog> {
           decoration: BoxDecoration(
               shape: BoxShape.rectangle,
               color: Colors.white,
-              borderRadius: BorderRadius.circular(widget._padding),
+              borderRadius: BorderRadius.circular(widget._radius),
               boxShadow: [
                 BoxShadow(
                     color: Colors.black, offset: Offset(0, 10), blurRadius: 10),
@@ -189,15 +188,12 @@ class _DeedDialogState extends State<DeedDialog> {
                     }
                   },
                   style: OutlinedButton.styleFrom(
-                    padding: EdgeInsets.all(0.0),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(widget._radius)),
-                    backgroundColor: widget.themeColor
-                  ),
+                      padding: EdgeInsets.all(0.0),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(widget._radius)),
+                      backgroundColor: widget.themeColor),
                   child: Container(
-                      width: double.infinity,
                       height: 80,
-                      // padding: EdgeInsets.all(8.0),
                       alignment: Alignment.center,
                       child: Text('Add',
                           style: TextStyle(fontSize: 15, color: Colors.white))),
