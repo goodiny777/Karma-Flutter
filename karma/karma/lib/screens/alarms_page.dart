@@ -155,11 +155,11 @@ class _AlarmsState extends State<AlarmsWidget> {
     tz.initializeTimeZones();
 
     await notificationsPlugin.zonedSchedule(
-        alarmInfo.id,
+        alarmInfo.id ?? -1,
         'Karma',
         alarmInfo.description,
         TZDateTime.from(
-            alarmInfo.alarmDateTime,
+            alarmInfo.alarmDateTime ?? DateTime.now(),
             tz.timeZoneDatabase.locations.values.firstWhere((element) =>
                 element.currentTimeZone.offset.toInt() ==
                 DateTime.now().timeZoneOffset.inMilliseconds)),

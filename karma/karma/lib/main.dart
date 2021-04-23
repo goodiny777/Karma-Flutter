@@ -15,12 +15,13 @@ void main() async {
       requestBadgePermission: true,
       requestSoundPermission: true,
       onDidReceiveLocalNotification:
-          (int id, String title, String body, String payload) async {});
-  var initializationSettings = InitializationSettings(android: initializationAndroidSettings, iOS: initializationIosSettings);
-  await notificationsPlugin.initialize(initializationSettings, onSelectNotification: (String payload) async {
+          (int id, String? title, String? body, String? payload) async {});
+  var initializationSettings = InitializationSettings(
+      android: initializationAndroidSettings, iOS: initializationIosSettings);
+  await notificationsPlugin.initialize(initializationSettings,
+      onSelectNotification: (String? payload) async {
     print(payload);
-    if(payload != null)
-      debugPrint(payload);
+    if (payload != null) debugPrint(payload);
   });
 
   runApp(MyApp());

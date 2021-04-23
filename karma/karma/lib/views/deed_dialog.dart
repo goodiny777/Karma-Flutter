@@ -11,6 +11,7 @@ class DeedDialog extends StatefulWidget {
   final bool? type;
   final Function()? onConfirm;
   final double _padding = 30.0;
+  final double _radius = 14.0;
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -56,14 +57,14 @@ class _DeedDialogState extends State<DeedDialog> {
   setBorder() {
     return OutlineInputBorder(
         borderSide: BorderSide(color: widget.themeColor),
-        borderRadius: BorderRadius.all(Radius.circular(20.0)));
+        borderRadius: BorderRadius.all(Radius.circular(widget._radius)));
   }
 
   contentBox(context) {
     return Stack(
       children: <Widget>[
         Container(
-          height: 520,
+          height: 500,
           padding: EdgeInsets.only(
               left: 20,
               top: widget._padding,
@@ -82,6 +83,7 @@ class _DeedDialogState extends State<DeedDialog> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
+                SizedBox(height: 8),
                 TextField(
                   controller: widget._nameController,
                   textInputAction: TextInputAction.next,
@@ -161,12 +163,8 @@ class _DeedDialogState extends State<DeedDialog> {
                           border: setBorder(),
                           hintText: "Description")),
                 ),
-                SizedBox(height: 80),
-                OutlineButton(
-                  padding: EdgeInsets.all(0.0),
-                  color: Colors.white,
-                  highlightElevation: 4,
-                  borderSide: BorderSide.none,
+                SizedBox(height: 40),
+                OutlinedButton(
                   onPressed: () {
                     if (widget._descriptionController.text.isNotEmpty &&
                         widget.dateTime != null &&
@@ -190,15 +188,16 @@ class _DeedDialogState extends State<DeedDialog> {
                           fontSize: 16.0);
                     }
                   },
+                  style: OutlinedButton.styleFrom(
+                    padding: EdgeInsets.all(0.0),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(widget._radius)),
+                    backgroundColor: widget.themeColor
+                  ),
                   child: Container(
-                      width: 180,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.rectangle,
-                        borderRadius: BorderRadius.circular(widget._padding),
-                        color: widget.themeColor,
-                      ),
-                      padding: EdgeInsets.all(8.0),
+                      width: double.infinity,
+                      height: 80,
+                      // padding: EdgeInsets.all(8.0),
                       alignment: Alignment.center,
                       child: Text('Add',
                           style: TextStyle(fontSize: 15, color: Colors.white))),
