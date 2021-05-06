@@ -1,13 +1,8 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:karma/dialogs/deed_dialog.dart';
 import 'package:karma/general/db.dart';
 import 'package:karma/models/deed.dart';
-import 'package:karma/screens/statistics_page.dart';
-import 'package:karma/views/backup_dialog.dart';
-import 'package:karma/views/contact_us_dialog.dart';
-import 'package:karma/views/deed_dialog.dart';
-
-import 'alarms_page.dart';
+import 'package:karma/widgets/drawer.dart';
 
 // ignore: must_be_immutable
 class MyHomePage extends StatefulWidget {
@@ -16,10 +11,6 @@ class MyHomePage extends StatefulWidget {
   final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
   final DBProvider _dbProvider = DBProvider.db;
   bool canAction = true;
-  PageController? _pageController;
-  ScrollController? _listScrollController;
-  ScrollController? _activeScrollController;
-  Drag? _drag;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -31,109 +22,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
         resizeToAvoidBottomInset: false,
         key: widget._drawerKey,
-        drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              DrawerHeader(
-                child: Row(children: [
-                  Image(
-                    image: AssetImage("assets/images/icon.png"),
-                  ),
-                  Text(
-                    'Karma',
-                    style: TextStyle(color: Colors.white, fontSize: 24),
-                  )
-                ]),
-                decoration: BoxDecoration(
-                  color: Colors.lightGreen,
-                ),
-              ),
-              ListTile(
-                leading: Image(
-                  image: AssetImage("assets/images/statistics.png"),
-                  width: 25,
-                  height: 25,
-                ),
-                title: Text("Statistics"),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => StatisticsWidget()));
-                },
-              ),
-              ListTile(
-                leading: Image(
-                  image: AssetImage("assets/images/alarm.png"),
-                  width: 25,
-                  height: 25,
-                ),
-                title: Text("Alarms"),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => AlarmsWidget()));
-                },
-              ),
-              ListTile(
-                leading: Image(
-                  image: AssetImage("assets/images/share.png"),
-                  width: 25,
-                  height: 25,
-                ),
-                title: Text("Share app"),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: Image(
-                  image: AssetImage("assets/images/backup.png"),
-                  width: 25,
-                  height: 25,
-                ),
-                title: Text("Backup"),
-                onTap: () {
-                  Navigator.pop(context);
-                  showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (BuildContext context) {
-                        return BackupDialog();
-                      });
-                },
-              ),
-              ListTile(
-                leading: Image(
-                  image: AssetImage("assets/images/email.png"),
-                  width: 25,
-                  height: 25,
-                ),
-                title: Text("Contact us"),
-                onTap: () {
-                  Navigator.pop(context);
-                  showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (BuildContext context) {
-                        return ContactUsDialog();
-                      });
-                },
-              ),
-              ListTile(
-                leading: Image(
-                  image: AssetImage("assets/images/about.png"),
-                  width: 25,
-                  height: 25,
-                ),
-                title: Text("About"),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
-        ),
+        drawer: getDrawer(context),
         appBar: AppBar(
           centerTitle: true,
           leading: IconButton(
@@ -153,32 +42,27 @@ class _MyHomePageState extends State<MyHomePage> {
                 future: widget._dbProvider.getAllDates(),
                 builder: (BuildContext context,
                     AsyncSnapshot<List<DateTime?>> snapshot) {
-                  return PageView.builder(
+                  return ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: snapshot.data?.length ?? 0,
+                    // physics: CustomScrollPhysics(),
                     itemBuilder: (BuildContext context, int index) {
-                      var item = snapshot.data?[index];
-                      var arrowRight;
-                      if (index < ((snapshot.data?.length ?? 0) - 1))
-                        arrowRight = Icon(Icons.arrow_forward_ios);
-                      var arrowLeft;
-                      if (index > 0)
-                        arrowLeft = Icon(Icons.arrow_back_ios);
-                      return ListTile(
-                        title: Center(
-                          child: Text(
-                            "${(item?.day ?? 0) < 10 ? "0" + (item?.day.toString() ?? "") : item?.day} ${(item?.month ?? 0) < 10 ? "0" + (item?.month.toString() ?? "") : (item?.month ?? 0)} ${(item?.year ?? 0)}",
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
+                      DateTime? item = snapshot.data?[index];
+                      return SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        child: ListTile(
+                          title: Center(
+                            child: Text(
+                              "${(item?.day ?? 0) < 10 ? "0" + (item?.day.toString() ?? "") : item?.day} ${(item?.month ?? 0) < 10 ? "0" + (item?.month.toString() ?? "") : (item?.month ?? 0)} ${(item?.year ?? 0)}",
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
                           ),
+                          trailing: Icon(Icons.arrow_forward_ios),
+                          leading: Icon(Icons.arrow_back_ios),
                         ),
-                        trailing: arrowRight,
-                        leading: arrowLeft,
                       );
                     },
-                    itemCount: snapshot.data?.length,
-                    controller: PageController(
-                        initialPage: (snapshot.data?.length ?? 1) - 1,
-                        keepPage: true,
-                        viewportFraction: 1),
                   );
                 },
               ),
@@ -323,38 +207,6 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           ),
         ));
-  }
-
-  Widget _buildCarousel(BuildContext context, int carouselIndex) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Text('Carousel $carouselIndex'),
-        SizedBox(
-          height: 50.0,
-          child: PageView.builder(
-            // store this controller in a State to save the carousel scroll position
-            controller: PageController(viewportFraction: 0.8),
-            itemBuilder: (BuildContext context, int itemIndex) {
-              return _buildCarouselItem(context, carouselIndex, itemIndex);
-            },
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget _buildCarouselItem(
-      BuildContext context, int carouselIndex, int itemIndex) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 4.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.grey,
-          borderRadius: BorderRadius.all(Radius.circular(4.0)),
-        ),
-      ),
-    );
   }
 }
 
