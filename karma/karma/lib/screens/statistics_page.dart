@@ -9,6 +9,7 @@ class StatisticsWidget extends StatefulWidget {
   final String? title;
   final DBProvider _dbProvider = DBProvider.db;
   List<Deed> deeds = [];
+  StatisticFilter? _filter = StatisticFilter.byAmount;
 
   @override
   _StatisticsState createState() => _StatisticsState();
@@ -26,53 +27,124 @@ class _StatisticsState extends State<StatisticsWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          centerTitle: true,
-          leading: GestureDetector(
-              child: Icon(
-                Icons.arrow_back,
-                color: Colors.white,
-              ),
-              onTap: () => {Navigator.pop(context)}),
-          title: Text(
-            'Statistics',
-            style: TextStyle(color: Colors.white),
-            textAlign: TextAlign.center,
-          )),
-      body: Center(
-        child: PieChart(
-          dataMap: {
-            "Good": widget.deeds
-                .where((element) => element.type == true)
-                .length
-                .toDouble(),
-            "Bad": widget.deeds
-                .where((element) => element.type == false)
-                .length
-                .toDouble()
-          },
-          animationDuration: Duration(milliseconds: 800),
-          chartLegendSpacing: 32,
-          chartRadius: MediaQuery.of(context).size.width,
-          colorList: [Colors.lightGreen, Colors.redAccent],
-          legendOptions: LegendOptions(
-            showLegendsInRow: true,
-            legendPosition: LegendPosition.top,
-            showLegends: true,
-            legendShape: BoxShape.circle,
-            legendTextStyle: TextStyle(
-              fontWeight: FontWeight.bold,
+        appBar: AppBar(
+            centerTitle: true,
+            leading: GestureDetector(
+                child: Icon(
+                  Icons.arrow_back,
+                  color: Colors.white,
+                ),
+                onTap: () => {Navigator.pop(context)}),
+            title: Text(
+              'Statistics',
+              style: TextStyle(color: Colors.white),
+              textAlign: TextAlign.center,
+            )),
+        body: Column(
+          children: [
+            SizedBox(
+              height: 20,
             ),
-          ),
-          chartValuesOptions: ChartValuesOptions(
-            showChartValueBackground: false,
-            showChartValues: true,
-            showChartValuesInPercentage: true,
-            showChartValuesOutside: false,
-            decimalPlaces: 1,
-          ),
-        ),
-      ),
-    );
+            Row(
+              children: [
+                Expanded(
+                  child: Row(
+                    children: [
+                      Radio<StatisticFilter>(
+                        value: StatisticFilter.byAmount,
+                        groupValue: widget._filter,
+                        onChanged: (StatisticFilter? value) {
+                          setState(() {
+                            widget._filter = value;
+                          });
+                        },
+                      ),
+                      Text('By Amount')
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Row(
+                    children: [
+                      Radio<StatisticFilter>(
+                        value: StatisticFilter.byValue,
+                        groupValue: widget._filter,
+                        onChanged: (StatisticFilter? value) {
+                          setState(() {
+                            widget._filter = value;
+                          });
+                        },
+                      ),
+                      Text('By Value')
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Row(
+                    children: [
+                      Radio<StatisticFilter>(
+                        value: StatisticFilter.byPercent,
+                        groupValue: widget._filter,
+                        onChanged: (StatisticFilter? value) {
+                          setState(() {
+                            widget._filter = value;
+                          });
+                        },
+                      ),
+                      Text('By Percent')
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            Center(
+              child: PieChart(
+                dataMap: {
+                  "Good": widget._filter == StatisticFilter.byAmount
+                      ? widget.deeds
+                          .where((element) => element.type == true)
+                          .length
+                          .toDouble()
+                      : widget.deeds
+                          .where((element) => element.type == true)
+                          .map((e) => e.value)
+                          .fold(0, (p, c) => p + c!),
+                  "Bad": widget._filter == StatisticFilter.byAmount
+                      ? widget.deeds
+                          .where((element) => element.type == false)
+                          .length
+                          .toDouble()
+                      : widget.deeds
+                          .where((element) => element.type == false)
+                          .map((e) => e.value)
+                          .fold(0, (p, c) => p + c!),
+                },
+                animationDuration: Duration(milliseconds: 800),
+                chartLegendSpacing: 32,
+                chartRadius: MediaQuery.of(context).size.width,
+                colorList: [Colors.lightGreen, Colors.redAccent],
+                legendOptions: LegendOptions(
+                  showLegendsInRow: true,
+                  legendPosition: LegendPosition.bottom,
+                  showLegends: true,
+                  legendShape: BoxShape.circle,
+                  legendTextStyle: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                chartValuesOptions: ChartValuesOptions(
+                  showChartValueBackground: false,
+                  showChartValues: true,
+                  showChartValuesInPercentage:
+                      widget._filter == StatisticFilter.byPercent,
+                  showChartValuesOutside: false,
+                  decimalPlaces: 1,
+                ),
+              ),
+            ),
+          ],
+        ));
   }
 }
+
+enum StatisticFilter { byAmount, byValue, byPercent }

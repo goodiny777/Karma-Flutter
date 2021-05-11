@@ -11,12 +11,30 @@ class MyHomePage extends StatefulWidget {
   final GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
   final DBProvider _dbProvider = DBProvider.db;
   bool canAction = true;
+  PageController? _pageController;
+  double _datePosition = 0;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  @override
+  void initState() {
+    widget._dbProvider
+        .getAllDates()
+        .then((value) =>
+            widget._pageController = PageController(initialPage: value.length))
+        .whenComplete(() => setState(() {}));
+
+    widget._pageController?.addListener(() {
+      setState(() {
+        widget._datePosition = widget._pageController?.page ?? 0;
+      });
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +51,6 @@ class _MyHomePageState extends State<MyHomePage> {
               }),
         ),
         body: Column(
-          // alignment: Alignment.topCenter,
           children: [
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.1,
@@ -42,10 +59,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 future: widget._dbProvider.getAllDates(),
                 builder: (BuildContext context,
                     AsyncSnapshot<List<DateTime?>> snapshot) {
-                  return ListView.builder(
+                  return PageView.builder(
                     scrollDirection: Axis.horizontal,
+                    controller: widget._pageController,
                     itemCount: snapshot.data?.length ?? 0,
-                    // physics: CustomScrollPhysics(),
                     itemBuilder: (BuildContext context, int index) {
                       DateTime? item = snapshot.data?[index];
                       return SizedBox(
@@ -78,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       return ListView.builder(
                         itemCount: snapshot.data?.length,
                         itemBuilder: (BuildContext context, int index) {
-                          Deed? item = snapshot.data?[index];
+                          Deed? item = snapshot.data?[index].;
                           Color color;
                           String imagePath;
                           String? deedTitle;

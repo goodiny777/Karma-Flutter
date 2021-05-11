@@ -25,6 +25,7 @@ class _AlarmsState extends State<AlarmsWidget> {
     return Scaffold(
       appBar: AppBar(
           centerTitle: true,
+          backgroundColor: Colors.lightBlue,
           leading: GestureDetector(
               child: Icon(
                 Icons.arrow_back,
