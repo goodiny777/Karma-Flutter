@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:karma/screens/about_page.dart';
 import 'package:karma/screens/alarms_page.dart';
 import 'package:karma/screens/statistics_page.dart';
 
@@ -105,6 +106,8 @@ Widget getDrawer(BuildContext context) {
           title: Text("About"),
           onTap: () {
             Navigator.pop(context);
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (context) => AboutWidget()));
           },
         ),
       ],

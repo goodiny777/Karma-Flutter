@@ -23,7 +23,7 @@ class Deed {
       description: json[columnDescription],
       type: json[columnType] == 1,
       value: json[columnValue],
-      date: DateTime.fromMicrosecondsSinceEpoch(json[columnDate]));
+      date: DateTime.fromMillisecondsSinceEpoch(json[columnDate]));
 
   Map<String, dynamic> toMap() => {
         columnDeedId: id,
@@ -31,6 +31,6 @@ class Deed {
         columnDescription: description,
         columnType: type,
         columnValue: value,
-        columnDate: date?.microsecondsSinceEpoch
+        columnDate: date?.millisecondsSinceEpoch
       };
 }

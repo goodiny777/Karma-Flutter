@@ -12,7 +12,9 @@ class MyHomePage extends StatefulWidget {
   final DBProvider _dbProvider = DBProvider.db;
   bool canAction = true;
   PageController? _pageController;
-  double _datePosition = 0;
+  List<DateTime?>? datesList = null;
+  DateTime? selectedDate = null;
+  int lastDatePosition = 0;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -23,16 +25,31 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     widget._dbProvider
         .getAllDates()
-        .then((value) =>
-            widget._pageController = PageController(initialPage: value.length))
+        .then((value) => {
+              widget.datesList = value,
+              widget.selectedDate = value[widget.lastDatePosition],
+              widget._pageController = PageController(),
+              widget._pageController?.addListener(() {
+                setState(() {
+                  if (widget.datesList?.isNotEmpty == true &&
+                      widget._pageController?.page?.toInt() !=
+                          widget.lastDatePosition) {
+                    widget.lastDatePosition =
+                        widget._pageController?.page?.toInt() ?? 0;
+                    widget.selectedDate =
+                        widget.datesList?[widget.lastDatePosition];
+                  }
+                });
+              })
+            })
         .whenComplete(() => setState(() {}));
-
-    widget._pageController?.addListener(() {
-      setState(() {
-        widget._datePosition = widget._pageController?.page ?? 0;
-      });
-    });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    widget._pageController?.dispose();
+    super.dispose();
   }
 
   @override
@@ -88,14 +105,15 @@ class _MyHomePageState extends State<MyHomePage> {
               child: SizedBox(
                 height: MediaQuery.of(context).size.height * 0.9,
                 child: FutureBuilder<List<Deed>>(
-                  future: widget._dbProvider.getAllDeeds(),
+                  future: widget._dbProvider
+                      .getAllDeedsForDate(widget.selectedDate),
                   builder: (BuildContext context,
                       AsyncSnapshot<List<Deed>> snapshot) {
                     if (snapshot.hasData) {
                       return ListView.builder(
                         itemCount: snapshot.data?.length,
                         itemBuilder: (BuildContext context, int index) {
-                          Deed? item = snapshot.data?[index].;
+                          Deed? item = snapshot.data?[index];
                           Color color;
                           String imagePath;
                           String? deedTitle;
@@ -191,9 +209,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Icon(Icons.remove_circle_outline_outlined,
                     color: Colors.white),
               ),
-              SizedBox(
-                width: 200,
-              ),
+              SizedBox(width: 200),
               FloatingActionButton(
                 backgroundColor: Colors.lightGreen,
                 heroTag: "btnGood",
