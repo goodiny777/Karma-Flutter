@@ -29,6 +29,7 @@ class _StatisticsState extends State<StatisticsWidget> {
     return Scaffold(
         appBar: AppBar(
             centerTitle: true,
+            backgroundColor: Colors.amberAccent,
             leading: GestureDetector(
                 child: Icon(
                   Icons.arrow_back,
@@ -45,58 +46,7 @@ class _StatisticsState extends State<StatisticsWidget> {
             SizedBox(
               height: 20,
             ),
-            Row(
-              children: [
-                Expanded(
-                  child: Row(
-                    children: [
-                      Radio<StatisticFilter>(
-                        value: StatisticFilter.byAmount,
-                        groupValue: widget._filter,
-                        onChanged: (StatisticFilter? value) {
-                          setState(() {
-                            widget._filter = value;
-                          });
-                        },
-                      ),
-                      Text('By Amount')
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Row(
-                    children: [
-                      Radio<StatisticFilter>(
-                        value: StatisticFilter.byValue,
-                        groupValue: widget._filter,
-                        onChanged: (StatisticFilter? value) {
-                          setState(() {
-                            widget._filter = value;
-                          });
-                        },
-                      ),
-                      Text('By Value')
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Row(
-                    children: [
-                      Radio<StatisticFilter>(
-                        value: StatisticFilter.byPercent,
-                        groupValue: widget._filter,
-                        onChanged: (StatisticFilter? value) {
-                          setState(() {
-                            widget._filter = value;
-                          });
-                        },
-                      ),
-                      Text('By Percent')
-                    ],
-                  ),
-                ),
-              ],
-            ),
+            getToggleWidgets(),
             Center(
               child: PieChart(
                 dataMap: {
@@ -144,6 +94,61 @@ class _StatisticsState extends State<StatisticsWidget> {
             ),
           ],
         ));
+  }
+
+  Widget getToggleWidgets() {
+    return Row(
+      children: [
+        Expanded(
+          child: Row(
+            children: [
+              Radio<StatisticFilter>(
+                value: StatisticFilter.byAmount,
+                groupValue: widget._filter,
+                onChanged: (StatisticFilter? value) {
+                  setState(() {
+                    widget._filter = value;
+                  });
+                },
+              ),
+              Text('By Amount')
+            ],
+          ),
+        ),
+        Expanded(
+          child: Row(
+            children: [
+              Radio<StatisticFilter>(
+                value: StatisticFilter.byValue,
+                groupValue: widget._filter,
+                onChanged: (StatisticFilter? value) {
+                  setState(() {
+                    widget._filter = value;
+                  });
+                },
+              ),
+              Text('By Value')
+            ],
+          ),
+        ),
+        Expanded(
+          child: Row(
+            children: [
+              Radio<StatisticFilter>(
+                value: StatisticFilter.byPercent,
+                groupValue: widget._filter,
+                onChanged: (StatisticFilter? value) {
+                  setState(() {
+                    widget._filter = value;
+                  });
+                },
+              ),
+              Text('By Percent')
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }
 

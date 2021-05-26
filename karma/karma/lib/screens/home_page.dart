@@ -12,8 +12,8 @@ class MyHomePage extends StatefulWidget {
   final DBProvider _dbProvider = DBProvider.db;
   bool canAction = true;
   PageController? _pageController;
-  List<DateTime?>? datesList = null;
-  DateTime? selectedDate = null;
+  List<DateTime?>? datesList;
+  DateTime? selectedDate;
   int lastDatePosition = 0;
 
   @override
@@ -21,6 +21,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  static const fabSide = 90.0;
+
   @override
   void initState() {
     widget._dbProvider
@@ -180,66 +182,75 @@ class _MyHomePageState extends State<MyHomePage> {
           padding: const EdgeInsets.all(8.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              FloatingActionButton(
-                backgroundColor: Colors.redAccent,
-                heroTag: "btnBad",
-                onPressed: () => {
-                  if (widget.canAction)
-                    {
-                      widget.canAction = false,
-                      showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (BuildContext context) {
-                            return DeedDialog(
-                                type: false,
-                                onConfirm: () => {
-                                      Future.delayed(
-                                          Duration(milliseconds: 500), () {
-                                        this.setState(() {});
-                                      })
-                                    });
-                          }),
-                      Future.delayed(Duration(seconds: 1), () {
-                        widget.canAction = true;
-                      }),
-                    }
-                },
-                child: Icon(Icons.remove_circle_outline_outlined,
-                    color: Colors.white),
-              ),
-              SizedBox(width: 200),
-              FloatingActionButton(
-                backgroundColor: Colors.lightGreen,
-                heroTag: "btnGood",
-                onPressed: () => {
-                  if (widget.canAction)
-                    {
-                      widget.canAction = false,
-                      showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (BuildContext context) {
-                            return DeedDialog(
-                                type: true,
-                                onConfirm: () => {
-                                      Future.delayed(
-                                          Duration(milliseconds: 500), () {
-                                        this.setState(() {});
-                                      })
-                                    });
-                          }),
-                      Future.delayed(Duration(seconds: 1), () {
-                        widget.canAction = true;
-                      }),
-                    }
-                },
-                child: Icon(Icons.add_circle_outline, color: Colors.white),
-              )
-            ],
+            children: <Widget>[badFab(), SizedBox(width: 200), goodFab()],
           ),
         ));
+  }
+
+  Widget badFab() {
+    return Container(
+      width: fabSide,
+      height: fabSide,
+      child: FloatingActionButton(
+        backgroundColor: Colors.redAccent,
+        heroTag: "btnBad",
+        onPressed: () => {
+          if (widget.canAction)
+            {
+              widget.canAction = false,
+              showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (BuildContext context) {
+                    return DeedDialog(
+                        type: false,
+                        onConfirm: () => {
+                              Future.delayed(Duration(milliseconds: 500), () {
+                                this.setState(() {});
+                              })
+                            });
+                  }),
+              Future.delayed(Duration(seconds: 1), () {
+                widget.canAction = true;
+              }),
+            }
+        },
+        child: Icon(Icons.remove_circle_outline_outlined, color: Colors.white),
+      ),
+    );
+  }
+
+  Widget goodFab() {
+    return Container(
+      width: fabSide,
+      height: fabSide,
+      child: FloatingActionButton(
+        backgroundColor: Colors.lightGreen,
+        heroTag: "btnGood",
+        onPressed: () => {
+          if (widget.canAction)
+            {
+              widget.canAction = false,
+              showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (BuildContext context) {
+                    return DeedDialog(
+                        type: true,
+                        onConfirm: () => {
+                              Future.delayed(Duration(milliseconds: 500), () {
+                                this.setState(() {});
+                              })
+                            });
+                  }),
+              Future.delayed(Duration(seconds: 1), () {
+                widget.canAction = true;
+              }),
+            }
+        },
+        child: Icon(Icons.add_circle_outline, color: Colors.white),
+      ),
+    );
   }
 }
 
