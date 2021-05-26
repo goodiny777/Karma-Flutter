@@ -1,6 +1,7 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
 import 'screens/home_page.dart';
 
 final FlutterLocalNotificationsPlugin notificationsPlugin =
@@ -33,6 +34,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         title: 'Karma',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: Colors.lightGreen,
           visualDensity: VisualDensity.adaptivePlatformDensity,

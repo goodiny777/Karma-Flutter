@@ -2,10 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:karma/screens/about_page.dart';
 import 'package:karma/screens/alarms_page.dart';
+import 'package:karma/screens/contact_page.dart';
 import 'package:karma/screens/statistics_page.dart';
 
 import '../dialogs/backup_dialog.dart';
-import '../dialogs/contact_us_dialog.dart';
 
 Widget getDrawer(BuildContext context) {
   return Drawer(
@@ -89,12 +89,8 @@ Widget getDrawer(BuildContext context) {
           title: Text("Contact us"),
           onTap: () {
             Navigator.pop(context);
-            showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (BuildContext context) {
-                  return ContactUsDialog();
-                });
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (context) => ContactWidget()));
           },
         ),
         ListTile(
