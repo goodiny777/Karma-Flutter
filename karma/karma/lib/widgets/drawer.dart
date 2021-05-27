@@ -2,10 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:karma/screens/about_page.dart';
 import 'package:karma/screens/alarms_page.dart';
+import 'package:karma/screens/backup_page.dart';
 import 'package:karma/screens/contact_page.dart';
 import 'package:karma/screens/statistics_page.dart';
-
-import '../dialogs/backup_dialog.dart';
 
 Widget getDrawer(BuildContext context) {
   return Drawer(
@@ -72,12 +71,8 @@ Widget getDrawer(BuildContext context) {
           title: Text("Backup"),
           onTap: () {
             Navigator.pop(context);
-            showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (BuildContext context) {
-                  return BackupDialog();
-                });
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (context) => BackupWidget()));
           },
         ),
         ListTile(

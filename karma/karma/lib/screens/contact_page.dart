@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+// ignore: must_be_immutable
 class ContactWidget extends StatefulWidget {
   var _padding = 10.0;
 
@@ -30,6 +31,7 @@ class _ContactState extends State<ContactWidget> {
           )),
       body: Center(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             TextField(
               textAlign: TextAlign.center,

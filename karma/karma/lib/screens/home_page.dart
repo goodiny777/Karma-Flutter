@@ -182,7 +182,7 @@ class _MyHomePageState extends State<MyHomePage> {
           padding: const EdgeInsets.all(8.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[badFab(), SizedBox(width: 200), goodFab()],
+            children: <Widget>[badFab(), SizedBox(width: 100), goodFab()],
           ),
         ));
   }
