@@ -26,7 +26,9 @@ class _ContactState extends State<ContactWidget> {
               onTap: () => {Navigator.pop(context)}),
           title: Text(
             'Contact Us',
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(
+              color: Colors.white,
+            ),
             textAlign: TextAlign.center,
           )),
       body: Center(

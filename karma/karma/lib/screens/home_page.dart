@@ -25,6 +25,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
+    updateDatesList();
+    super.initState();
+  }
+
+  void updateDatesList() {
     widget._dbProvider
         .getAllDates()
         .then((value) => {
@@ -32,20 +37,20 @@ class _MyHomePageState extends State<MyHomePage> {
               widget.selectedDate = value[widget.lastDatePosition],
               widget._pageController = PageController(),
               widget._pageController?.addListener(() {
-                setState(() {
-                  if (widget.datesList?.isNotEmpty == true &&
-                      widget._pageController?.page?.toInt() !=
-                          widget.lastDatePosition) {
-                    widget.lastDatePosition =
-                        widget._pageController?.page?.toInt() ?? 0;
-                    widget.selectedDate =
-                        widget.datesList?[widget.lastDatePosition];
-                  }
-                });
+                updateDeedsList();
               })
             })
         .whenComplete(() => setState(() {}));
-    super.initState();
+  }
+
+  void updateDeedsList() {
+    setState(() {
+      if (widget.datesList?.isNotEmpty == true &&
+          widget._pageController?.page?.toInt() != widget.lastDatePosition) {
+        widget.lastDatePosition = widget._pageController?.page?.toInt() ?? 0;
+        widget.selectedDate = widget.datesList?[widget.lastDatePosition];
+      }
+    });
   }
 
   @override
@@ -205,15 +210,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     return DeedDialog(
                         type: false,
                         onConfirm: () => {
-                              Future.delayed(Duration(milliseconds: 500), () {
-                                this.setState(() {});
-                              })
+                              updateOnDeedAdded(),
                             });
                   }),
               Future.delayed(Duration(seconds: 1), () {
                 widget.canAction = true;
               }),
-            }
+            },
         },
         child: Icon(Icons.remove_circle_outline_outlined, color: Colors.white),
       ),
@@ -238,9 +241,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     return DeedDialog(
                         type: true,
                         onConfirm: () => {
-                              Future.delayed(Duration(milliseconds: 500), () {
-                                this.setState(() {});
-                              })
+                              updateOnDeedAdded(),
                             });
                   }),
               Future.delayed(Duration(seconds: 1), () {
@@ -251,6 +252,14 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Icon(Icons.add_circle_outline, color: Colors.white),
       ),
     );
+  }
+
+  void updateOnDeedAdded() {
+    Future.delayed(Duration(milliseconds: 500), () {
+      this.setState(() {
+        updateDatesList();
+      });
+    });
   }
 }
 

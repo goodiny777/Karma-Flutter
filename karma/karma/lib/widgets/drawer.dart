@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:karma/general/constants.dart';
 import 'package:karma/screens/about_page.dart';
 import 'package:karma/screens/alarms_page.dart';
 import 'package:karma/screens/backup_page.dart';
@@ -12,17 +13,13 @@ Widget getDrawer(BuildContext context) {
       padding: EdgeInsets.zero,
       children: <Widget>[
         DrawerHeader(
-          child: Row(children: [
-            Image(
-              image: AssetImage("assets/images/icon.png"),
-            ),
-            Text(
-              'Karma',
-              style: TextStyle(color: Colors.white, fontSize: 24),
-            )
-          ]),
+          child: Image(
+            image: AssetImage("assets/images/karma_banner.jpg"),
+          ),
+          margin: EdgeInsets.zero,
+          padding: EdgeInsets.zero,
           decoration: BoxDecoration(
-            color: Colors.lightGreen,
+            color: appGreen,
           ),
         ),
         ListTile(

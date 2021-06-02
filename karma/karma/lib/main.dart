@@ -36,9 +36,9 @@ class MyApp extends StatelessWidget {
         title: 'Karma',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          primarySwatch: Colors.lightGreen,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-        ),
+            primarySwatch: Colors.lightGreen,
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+            fontFamily: 'Sansation'),
         home: AnimatedSplashScreen(
             splash: Image.asset(
               "assets/images/icon.png",
