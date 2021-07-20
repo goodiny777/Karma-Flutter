@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:karma/dialogs/alarm_dialog.dart';
 import 'package:karma/general/db.dart';
 import 'package:karma/models/alarm.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
-import 'package:timezone/timezone.dart';
 
 import '../main.dart';
 
@@ -20,6 +20,13 @@ class AlarmsWidget extends StatefulWidget {
 }
 
 class _AlarmsState extends State<AlarmsWidget> {
+  @override
+  void initState() {
+    _configureLocalTimeZone();
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -159,14 +166,28 @@ class _AlarmsState extends State<AlarmsWidget> {
         alarmInfo.id ?? -1,
         'Karma',
         alarmInfo.description,
-        TZDateTime.from(
-            alarmInfo.alarmDateTime ?? DateTime.now(),
-            tz.timeZoneDatabase.locations.values.firstWhere((element) =>
-                element.currentTimeZone.offset.toInt() ==
-                DateTime.now().timeZoneOffset.inMilliseconds)),
+        _nextInstanceOfTime(alarmInfo.alarmDateTime?.hour ?? 0,
+            alarmInfo.alarmDateTime?.minute ?? 0),
         platformChannelSpecifics,
         androidAllowWhileIdle: true,
         uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime);
+            UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: DateTimeComponents.time);
+  }
+
+  Future<void> _configureLocalTimeZone() async {
+    tz.initializeTimeZones();
+    final String? timeZoneName = await FlutterNativeTimezone.getLocalTimezone();
+    tz.setLocalLocation(tz.getLocation(timeZoneName!));
+  }
+
+  tz.TZDateTime _nextInstanceOfTime(int hour, int minute) {
+    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+    tz.TZDateTime scheduledDate =
+        tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
+    if (scheduledDate.isBefore(now)) {
+      scheduledDate = scheduledDate.add(const Duration(days: 1));
+    }
+    return scheduledDate;
   }
 }

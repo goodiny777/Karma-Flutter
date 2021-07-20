@@ -49,6 +49,18 @@ Widget getDrawer(BuildContext context) {
           },
         ),
         ListTile(
+          leading: Icon(
+            Icons.queue_music_rounded,
+            color: Colors.black,
+          ),
+          title: Text("Music"),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (context) => AlarmsWidget()));
+          },
+        ),
+        ListTile(
           leading: Image(
             image: AssetImage("assets/images/share.png"),
             width: 25,

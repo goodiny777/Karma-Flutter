@@ -28,7 +28,8 @@ dependencies:
   path_provider: ^2.0.1
   fluttertoast: ^8.0.3
   animated_splash_screen: ^1.1.0
-  flutter_local_notifications: ^5.0.0+1
+  flutter_local_notifications: ^6.0.0
+  flutter_native_timezone: ^2.0.0
   timezone: ^0.7.0
   pie_chart: ^5.0.0
 
