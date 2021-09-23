@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:karma/general/constants.dart';
 import 'package:karma/general/db.dart';
 import 'package:karma/models/deed.dart';
 
@@ -30,7 +31,7 @@ class _DeedDialogState extends State<DeedDialog> {
   @override
   Widget build(BuildContext context) {
     if (widget.type == true) {
-      widget.themeColor = Colors.lightGreen;
+      widget.themeColor = materialAppLightGreen;
     }
 
     return Theme(

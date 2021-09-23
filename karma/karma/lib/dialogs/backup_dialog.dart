@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:karma/general/constants.dart';
 
 class BackupDialog extends StatefulWidget {
   final String? title, descriptions, text;
@@ -57,7 +58,7 @@ class _BackupDialogState extends State<BackupDialog> {
                           top: 20.0, bottom: 20.0, left: 10.0, right: 10.0),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(widget._padding)),
-                      backgroundColor: Colors.lightGreen),
+                      backgroundColor: materialAppLightGreen),
                   child: Container(
                     decoration: BoxDecoration(
                       shape: BoxShape.rectangle,
@@ -80,7 +81,7 @@ class _BackupDialogState extends State<BackupDialog> {
                           shape: RoundedRectangleBorder(
                               borderRadius:
                                   BorderRadius.circular(widget._padding)),
-                          backgroundColor: Colors.lightGreen),
+                          backgroundColor: materialAppLightGreen),
                       child: Container(
                         decoration: BoxDecoration(
                           shape: BoxShape.rectangle,
@@ -99,7 +100,7 @@ class _BackupDialogState extends State<BackupDialog> {
                           shape: RoundedRectangleBorder(
                               borderRadius:
                                   BorderRadius.circular(widget._padding)),
-                          backgroundColor: Colors.lightGreen),
+                          backgroundColor: materialAppLightGreen),
                       child: Container(
                         decoration: BoxDecoration(
                           shape: BoxShape.rectangle,

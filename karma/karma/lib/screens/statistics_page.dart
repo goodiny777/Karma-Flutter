@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:karma/general/constants.dart';
 import 'package:karma/general/db.dart';
 import 'package:karma/models/deed.dart';
 import 'package:pie_chart/pie_chart.dart';
@@ -72,7 +73,7 @@ class _StatisticsState extends State<StatisticsWidget> {
                 animationDuration: Duration(milliseconds: 800),
                 chartLegendSpacing: 32,
                 chartRadius: MediaQuery.of(context).size.width,
-                colorList: [Colors.lightGreen, Colors.redAccent],
+                colorList: [materialAppLightGreen, materialAppYellow],
                 legendOptions: LegendOptions(
                   showLegendsInRow: true,
                   legendPosition: LegendPosition.bottom,

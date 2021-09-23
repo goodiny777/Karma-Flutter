@@ -2,6 +2,7 @@ import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+import 'general/constants.dart';
 import 'screens/home_page.dart';
 
 final FlutterLocalNotificationsPlugin notificationsPlugin =
@@ -36,7 +37,7 @@ class MyApp extends StatelessWidget {
         title: 'Karma',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-            primarySwatch: Colors.lightGreen,
+            primarySwatch: materialAppLightGreen,
             visualDensity: VisualDensity.adaptivePlatformDensity,
             fontFamily: 'Sansation'),
         home: AnimatedSplashScreen(
@@ -45,7 +46,7 @@ class MyApp extends StatelessWidget {
               width: 500,
               height: 500,
             ),
-            backgroundColor: Colors.lightGreen,
+            backgroundColor: materialAppLightGreen,
             nextScreen: MyHomePage()));
   }
 }

@@ -19,7 +19,7 @@ Widget getDrawer(BuildContext context) {
           margin: EdgeInsets.zero,
           padding: EdgeInsets.zero,
           decoration: BoxDecoration(
-            color: appGreen,
+            color: materialAppDarkGreen,
           ),
         ),
         ListTile(

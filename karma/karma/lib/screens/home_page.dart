@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:karma/dialogs/deed_dialog.dart';
+import 'package:karma/general/constants.dart';
 import 'package:karma/general/db.dart';
 import 'package:karma/models/deed.dart';
 import 'package:karma/widgets/drawer.dart';
@@ -34,7 +35,8 @@ class _MyHomePageState extends State<MyHomePage> {
         .getAllDates()
         .then((value) => {
               widget.datesList = value,
-              widget.selectedDate = value[widget.lastDatePosition],
+              widget.selectedDate =
+                  value.length > 0 ? value[widget.lastDatePosition] : null,
               widget._pageController = PageController(),
               widget._pageController?.addListener(() {
                 updateDeedsList();
@@ -127,10 +129,10 @@ class _MyHomePageState extends State<MyHomePage> {
                           deedTitle = item?.name;
                           if (item?.type == true) {
                             imagePath = "assets/images/good.png";
-                            color = Colors.lightGreenAccent;
+                            color = materialAppLightGreen;
                           } else {
                             imagePath = "assets/images/bad.png";
-                            color = Colors.redAccent;
+                            color = materialAppYellow;
                           }
                           return Dismissible(
                             background: Container(color: Colors.red),
@@ -144,16 +146,23 @@ class _MyHomePageState extends State<MyHomePage> {
                               height: 100,
                               margin: EdgeInsets.all(5),
                               child: ListTile(
-                                title: Text(deedTitle ?? ''),
+                                title: Text(
+                                  "Title: $deedTitle",
+                                  style: TextStyle(fontSize: 22),
+                                ),
                                 leading: Image(
                                   image: AssetImage(imagePath),
                                   color: color,
                                 ),
-                                trailing:
-                                    Text("Deed evaluation: ${item?.value}"),
+                                trailing: Text(
+                                    "Deed evaluation: ${item?.value}",
+                                    style: TextStyle(fontSize: 18)),
                                 isThreeLine: true,
                                 subtitle: Text(
-                                    "${item?.description}\n${item?.date?.hour}:${item?.date?.minute}"),
+                                  "Time: ${item?.date?.hour}:${item?.date?.minute}"
+                                  "\nDescription: ${item?.description}",
+                                  style: TextStyle(fontSize: 18),
+                                ),
                               ),
                               decoration: BoxDecoration(
                                 color: Colors.white,
@@ -228,7 +237,7 @@ class _MyHomePageState extends State<MyHomePage> {
       width: fabSide,
       height: fabSide,
       child: FloatingActionButton(
-        backgroundColor: Colors.lightGreen,
+        backgroundColor: materialAppLightGreen,
         heroTag: "btnGood",
         onPressed: () => {
           if (widget.canAction)

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:collection/collection.dart';
 import 'package:karma/models/alarm.dart';
 import 'package:karma/models/deed.dart';
 import 'package:path_provider/path_provider.dart';
@@ -72,9 +73,20 @@ class DBProvider {
 
   Future<List<DateTime?>> getAllDates() async {
     return getAllDeeds().then((value) {
-      var list = value.map((e) => e.date).toSet().toList();
-      list.sort((d1, d2) => d1?.compareTo(d2 ?? DateTime.now()) ?? 0);
-      return list;
+      var list = value.map((e) => e.date).toList();
+      List<DateTime?> filteredList = [];
+      list.forEach((date) {
+        if (filteredList.firstWhereOrNull((element) =>
+                element?.day == date?.day &&
+                element?.month == date?.month &&
+                element?.year == date?.year) !=
+            null) {
+          filteredList.add(date);
+        }
+      });
+
+      filteredList.sort((d1, d2) => d1?.compareTo(d2 ?? DateTime.now()) ?? 0);
+      return filteredList;
     });
   }
 
