@@ -63,7 +63,7 @@ class DBProvider {
     final db = await database;
     var res = await db?.query("Deed",
         where: date?.millisecondsSinceEpoch != null
-            ? '${columnDate} = ${date?.millisecondsSinceEpoch}'
+            ? '$columnDate = ${date?.millisecondsSinceEpoch}'
             : 'TRUE');
     List<Deed> list = (res?.isNotEmpty == true
         ? res?.map((c) => Deed.fromMap(c)).toList()
@@ -79,7 +79,7 @@ class DBProvider {
         if (filteredList.firstWhereOrNull((element) =>
                 element?.day == date?.day &&
                 element?.month == date?.month &&
-                element?.year == date?.year) !=
+                element?.year == date?.year) ==
             null) {
           filteredList.add(date);
         }

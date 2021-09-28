@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:karma/dialogs/deed_dialog.dart';
 import 'package:karma/general/constants.dart';
 import 'package:karma/general/db.dart';
 import 'package:karma/models/deed.dart';
 import 'package:karma/widgets/drawer.dart';
+import 'package:karma/widgets/semi_circle.dart';
 
 // ignore: must_be_immutable
 class MyHomePage extends StatefulWidget {
@@ -22,7 +24,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  static const fabSide = 90.0;
+  static const fabSide = 80.0;
 
   @override
   void initState() {
@@ -63,176 +65,148 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    mainContext = context;
     return Scaffold(
-        resizeToAvoidBottomInset: false,
-        key: widget._drawerKey,
-        drawer: getDrawer(context),
-        appBar: AppBar(
-          centerTitle: true,
-          leading: IconButton(
-              alignment: Alignment.centerRight,
-              icon: Icon(Icons.menu, color: Colors.white),
-              onPressed: () {
-                widget._drawerKey.currentState?.openDrawer();
-              }),
-        ),
-        body: Column(
-          children: [
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.1,
-              width: MediaQuery.of(context).size.width,
-              child: FutureBuilder<List<DateTime?>>(
-                future: widget._dbProvider.getAllDates(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<List<DateTime?>> snapshot) {
-                  return PageView.builder(
-                    scrollDirection: Axis.horizontal,
-                    controller: widget._pageController,
-                    itemCount: snapshot.data?.length ?? 0,
-                    itemBuilder: (BuildContext context, int index) {
-                      DateTime? item = snapshot.data?[index];
-                      return SizedBox(
-                        width: MediaQuery.of(context).size.width,
-                        child: ListTile(
-                          title: Center(
-                            child: Text(
-                              "${(item?.day ?? 0) < 10 ? "0" + (item?.day.toString() ?? "") : item?.day} ${(item?.month ?? 0) < 10 ? "0" + (item?.month.toString() ?? "") : (item?.month ?? 0)} ${(item?.year ?? 0)}",
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
+      resizeToAvoidBottomInset: false,
+      key: widget._drawerKey,
+      drawer: getDrawer(context),
+      appBar: AppBar(
+        centerTitle: true,
+        leading: IconButton(
+            alignment: Alignment.centerRight,
+            icon: Icon(Icons.menu, color: Colors.white),
+            onPressed: () {
+              widget._drawerKey.currentState?.openDrawer();
+            }),
+      ),
+      body: Column(
+        children: [
+          SizedBox(
+            height: screenHeight * 0.1,
+            width: screenWidth,
+            child: FutureBuilder<List<DateTime?>>(
+              future: widget._dbProvider.getAllDates(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<List<DateTime?>> snapshot) {
+                return PageView.builder(
+                  scrollDirection: Axis.horizontal,
+                  controller: widget._pageController,
+                  itemCount: snapshot.data?.length ?? 0,
+                  itemBuilder: (BuildContext context, int index) {
+                    DateTime? item = snapshot.data?[index];
+                    return SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      child: ListTile(
+                        title: Center(
+                          child: Text(
+                            "${(item?.day ?? 0) < 10 ? "0" + (item?.day.toString() ?? "") : item?.day} ${(item?.month ?? 0) < 10 ? "0" + (item?.month.toString() ?? "") : (item?.month ?? 0)} ${(item?.year ?? 0)}",
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        trailing: Icon(Icons.arrow_forward_ios),
+                        leading: Icon(Icons.arrow_back_ios),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+          Expanded(
+            child: SizedBox(
+              child: FutureBuilder<List<Deed>>(
+                future:
+                    widget._dbProvider.getAllDeedsForDate(widget.selectedDate),
+                builder:
+                    (BuildContext context, AsyncSnapshot<List<Deed>> snapshot) {
+                  if (snapshot.hasData) {
+                    return ListView.builder(
+                      itemCount: snapshot.data?.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        Deed? item = snapshot.data?[index];
+                        Color color;
+                        String imagePath;
+                        String? deedTitle;
+                        deedTitle = item?.name;
+                        if (item?.type == true) {
+                          imagePath = "assets/images/good.png";
+                          color = materialAppLightGreen;
+                        } else {
+                          imagePath = "assets/images/bad.png";
+                          color = materialAppYellow;
+                        }
+                        return Dismissible(
+                          background: Container(color: Colors.red),
+                          key: UniqueKey(),
+                          onDismissed: (direction) {
+                            setState(() {
+                              widget._dbProvider.deleteDeed(item?.id ?? -1);
+                            });
+                          },
+                          child: Container(
+                            height: 120,
+                            margin: EdgeInsets.all(5),
+                            child: ListTile(
+                              title: Text(
+                                "Title: $deedTitle",
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              leading: Image(
+                                image: AssetImage(imagePath),
+                                color: color,
+                              ),
+                              trailing: Text("Deed evaluation: ${item?.value}",
+                                  style: TextStyle(fontSize: 16)),
+                              isThreeLine: true,
+                              subtitle: Text(
+                                "Time: ${item?.date?.hour}:${item?.date?.minute}"
+                                "\nDescription: ${item?.description}",
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20)),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: color.withOpacity(0.5),
+                                  spreadRadius: 5,
+                                  blurRadius: 7,
+                                  offset: Offset(
+                                      0, 3), // changes position of shadow
+                                ),
+                              ],
                             ),
                           ),
-                          trailing: Icon(Icons.arrow_forward_ios),
-                          leading: Icon(Icons.arrow_back_ios),
-                        ),
-                      );
-                    },
-                  );
+                        );
+                      },
+                    );
+                  } else {
+                    return Center(child: CircularProgressIndicator());
+                  }
                 },
               ),
             ),
-            Expanded(
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.9,
-                child: FutureBuilder<List<Deed>>(
-                  future: widget._dbProvider
-                      .getAllDeedsForDate(widget.selectedDate),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<List<Deed>> snapshot) {
-                    if (snapshot.hasData) {
-                      return ListView.builder(
-                        itemCount: snapshot.data?.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          Deed? item = snapshot.data?[index];
-                          Color color;
-                          String imagePath;
-                          String? deedTitle;
-                          deedTitle = item?.name;
-                          if (item?.type == true) {
-                            imagePath = "assets/images/good.png";
-                            color = materialAppLightGreen;
-                          } else {
-                            imagePath = "assets/images/bad.png";
-                            color = materialAppYellow;
-                          }
-                          return Dismissible(
-                            background: Container(color: Colors.red),
-                            key: UniqueKey(),
-                            onDismissed: (direction) {
-                              setState(() {
-                                widget._dbProvider.deleteDeed(item?.id ?? -1);
-                              });
-                            },
-                            child: Container(
-                              height: 100,
-                              margin: EdgeInsets.all(5),
-                              child: ListTile(
-                                title: Text(
-                                  "Title: $deedTitle",
-                                  style: TextStyle(fontSize: 22),
-                                ),
-                                leading: Image(
-                                  image: AssetImage(imagePath),
-                                  color: color,
-                                ),
-                                trailing: Text(
-                                    "Deed evaluation: ${item?.value}",
-                                    style: TextStyle(fontSize: 18)),
-                                isThreeLine: true,
-                                subtitle: Text(
-                                  "Time: ${item?.date?.hour}:${item?.date?.minute}"
-                                  "\nDescription: ${item?.description}",
-                                  style: TextStyle(fontSize: 18),
-                                ),
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(20)),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: color.withOpacity(0.5),
-                                    spreadRadius: 5,
-                                    blurRadius: 7,
-                                    offset: Offset(
-                                        0, 3), // changes position of shadow
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    } else {
-                      return Center(child: CircularProgressIndicator());
-                    }
-                  },
-                ),
-              ),
-            ),
-          ],
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[badFab(), SizedBox(width: 100), goodFab()],
           ),
-        ));
-  }
-
-  Widget badFab() {
-    return Container(
-      width: fabSide,
-      height: fabSide,
-      child: FloatingActionButton(
-        backgroundColor: Colors.redAccent,
-        heroTag: "btnBad",
-        onPressed: () => {
-          if (widget.canAction)
-            {
-              widget.canAction = false,
-              showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: (BuildContext context) {
-                    return DeedDialog(
-                        type: false,
-                        onConfirm: () => {
-                              updateOnDeedAdded(),
-                            });
-                  }),
-              Future.delayed(Duration(seconds: 1), () {
-                widget.canAction = true;
-              }),
-            },
-        },
-        child: Icon(Icons.remove_circle_outline_outlined, color: Colors.white),
+          Container(
+            child: Stack(
+              alignment: AlignmentDirectional.topCenter,
+              children: [
+                SemiCircle(),
+                Positioned(
+                  child: fab(),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget goodFab() {
+  Widget fab() {
     return Container(
       width: fabSide,
       height: fabSide,
@@ -248,7 +222,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   barrierDismissible: false,
                   builder: (BuildContext context) {
                     return DeedDialog(
-                        type: true,
                         onConfirm: () => {
                               updateOnDeedAdded(),
                             });
@@ -258,7 +231,7 @@ class _MyHomePageState extends State<MyHomePage> {
               }),
             }
         },
-        child: Icon(Icons.add_circle_outline, color: Colors.white),
+        child: Icon(Icons.add_rounded, color: Colors.white),
       ),
     );
   }

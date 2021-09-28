@@ -9,19 +9,18 @@ import 'package:karma/models/deed.dart';
 
 // ignore: must_be_immutable
 class DeedDialog extends StatefulWidget {
-  final bool? type;
   final Function()? onConfirm;
-  final double _padding = 30.0;
-  final double _radius = 14.0;
+  final double _padding = 10.0;
+  final double _radius = 12.0;
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final DBProvider _dbProvider = DBProvider.db;
+  List<bool> _isToggleSelected = List.generate(3, (index) => false);
   DateTime dateTime = DateTime.now();
-  Color themeColor = Colors.red;
   double _currentSliderValue = 5.0;
 
-  DeedDialog({Key? key, this.type, this.onConfirm}) : super(key: key);
+  DeedDialog({Key? key, this.onConfirm}) : super(key: key);
 
   @override
   _DeedDialogState createState() => _DeedDialogState();
@@ -30,13 +29,9 @@ class DeedDialog extends StatefulWidget {
 class _DeedDialogState extends State<DeedDialog> {
   @override
   Widget build(BuildContext context) {
-    if (widget.type == true) {
-      widget.themeColor = materialAppLightGreen;
-    }
-
     return Theme(
       data: ThemeData(
-        primarySwatch: widget.themeColor as MaterialColor,
+        primarySwatch: materialAppYellow,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       child: Dialog(
@@ -56,7 +51,7 @@ class _DeedDialogState extends State<DeedDialog> {
 
   setBorder() {
     return OutlineInputBorder(
-        borderSide: BorderSide(color: widget.themeColor),
+        borderSide: BorderSide(color: materialAppYellow),
         borderRadius: BorderRadius.all(Radius.circular(widget._radius)));
   }
 
@@ -64,13 +59,13 @@ class _DeedDialogState extends State<DeedDialog> {
     return Stack(
       children: <Widget>[
         Container(
-          height: 500,
+          height: screenHeight * 0.7,
+          width: screenWidth * 0.96,
           padding: EdgeInsets.only(
               left: 20,
               top: widget._padding,
               right: 20,
               bottom: widget._padding),
-          margin: EdgeInsets.only(top: widget._padding),
           decoration: BoxDecoration(
               shape: BoxShape.rectangle,
               color: Colors.white,
@@ -134,7 +129,7 @@ class _DeedDialogState extends State<DeedDialog> {
                 SizedBox(height: 8),
                 SliderTheme(
                   data: SliderThemeData(
-                      valueIndicatorColor: widget.themeColor,
+                      valueIndicatorColor: materialAppYellow,
                       valueIndicatorTextStyle: TextStyle(color: Colors.white)),
                   child: Slider(
                       value: widget._currentSliderValue,
@@ -163,16 +158,36 @@ class _DeedDialogState extends State<DeedDialog> {
                           border: setBorder(),
                           hintText: "Description")),
                 ),
-                SizedBox(height: 40),
+                SizedBox(height: 20),
+                Container(
+                    height: 30,
+                    child: ToggleButtons(
+                        children: [
+                          Text("Good"),
+                          Text("Irrelevant"),
+                          Text("Bad")
+                        ],
+                        isSelected: widget._isToggleSelected,
+                        borderRadius: BorderRadius.circular(12),
+                        borderWidth: 1,
+                        selectedColor: materialAppLightGreen,
+                        selectedBorderColor: materialAppLightGreen,
+                        borderColor: materialAppYellow,
+                        onPressed: (int index) => {
+                              setState(() {
+                                widget._isToggleSelected = List.generate(3, (index) => false);
+                                widget._isToggleSelected[index] = true;
+                              })
+                            })),
+                SizedBox(height: 60),
                 OutlinedButton(
                   onPressed: () {
                     if (widget._descriptionController.text.isNotEmpty &&
-                        widget.dateTime != null &&
                         widget._nameController.text.isNotEmpty) {
                       widget._dbProvider.newDeed(Deed(
                           name: widget._nameController.text,
                           description: widget._descriptionController.text,
-                          type: widget.type,
+                          type: true,
                           value: widget._currentSliderValue.toInt(),
                           date: widget.dateTime));
                       Navigator.pop(context);
@@ -192,7 +207,7 @@ class _DeedDialogState extends State<DeedDialog> {
                       padding: EdgeInsets.all(0.0),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(widget._radius)),
-                      backgroundColor: widget.themeColor),
+                      backgroundColor: materialAppYellow),
                   child: Container(
                       height: 80,
                       alignment: Alignment.center,
@@ -204,8 +219,8 @@ class _DeedDialogState extends State<DeedDialog> {
           ),
         ),
         Positioned(
-            left: 14,
-            top: 44,
+            left: 10,
+            top: 10,
             child: GestureDetector(
               child: Icon(Icons.close),
               onTap: () {

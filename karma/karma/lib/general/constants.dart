@@ -1,6 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+BuildContext? mainContext;
+
+var screenWidth = MediaQuery.of(mainContext!).size.width;
+var screenHeight = MediaQuery.of(mainContext!).size.height;
+
 const materialAppDarkGreen = MaterialColor(
   0xff042707,
   <int, Color>{
@@ -16,6 +21,7 @@ const materialAppDarkGreen = MaterialColor(
     900: Color(0xFF021203),
   },
 );
+
 const materialAppLightGreen = MaterialColor(0xff79871d, <int, Color>{
   50: Color(0xFFe4edab),
   100: Color(0xFFd4e278),
@@ -28,6 +34,7 @@ const materialAppLightGreen = MaterialColor(0xff79871d, <int, Color>{
   800: Color(0xFF3c430e),
   900: Color(0xFF1e2207),
 });
+
 const materialAppYellow = MaterialColor(0xffFBE00F, <int, Color>{
   50: Color(0xFFfef7c3),
   100: Color(0xFFfdf29f),

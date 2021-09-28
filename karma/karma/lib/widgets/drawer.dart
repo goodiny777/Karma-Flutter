@@ -27,8 +27,12 @@ Widget getDrawer(BuildContext context) {
             image: AssetImage("assets/images/statistics.png"),
             width: 25,
             height: 25,
+            color: materialAppLightGreen,
           ),
-          title: Text("Statistics"),
+          title: Text(
+            "Statistics",
+            style: TextStyle(color: materialAppLightGreen),
+          ),
           onTap: () {
             Navigator.pop(context);
             Navigator.of(context).push(
@@ -40,8 +44,12 @@ Widget getDrawer(BuildContext context) {
             image: AssetImage("assets/images/alarm.png"),
             width: 25,
             height: 25,
+            color: materialAppLightGreen,
           ),
-          title: Text("Alarms"),
+          title: Text(
+            "Alarms",
+            style: TextStyle(color: materialAppLightGreen),
+          ),
           onTap: () {
             Navigator.pop(context);
             Navigator.of(context)
@@ -51,9 +59,13 @@ Widget getDrawer(BuildContext context) {
         ListTile(
           leading: Icon(
             Icons.queue_music_rounded,
-            color: Colors.black,
+            color: materialAppLightGreen,
+            size: 25.0,
           ),
-          title: Text("Music"),
+          title: Text(
+            "Music",
+            style: TextStyle(color: materialAppLightGreen),
+          ),
           onTap: () {
             Navigator.pop(context);
             Navigator.of(context)
@@ -65,8 +77,12 @@ Widget getDrawer(BuildContext context) {
             image: AssetImage("assets/images/share.png"),
             width: 25,
             height: 25,
+            color: materialAppLightGreen,
           ),
-          title: Text("Share app"),
+          title: Text(
+            "Share app",
+            style: TextStyle(color: materialAppLightGreen),
+          ),
           onTap: () {
             Navigator.pop(context);
           },
@@ -76,8 +92,12 @@ Widget getDrawer(BuildContext context) {
             image: AssetImage("assets/images/backup.png"),
             width: 25,
             height: 25,
+            color: materialAppLightGreen,
           ),
-          title: Text("Backup"),
+          title: Text(
+            "Backup",
+            style: TextStyle(color: materialAppLightGreen),
+          ),
           onTap: () {
             Navigator.pop(context);
             Navigator.of(context)
@@ -89,8 +109,12 @@ Widget getDrawer(BuildContext context) {
             image: AssetImage("assets/images/email.png"),
             width: 25,
             height: 25,
+            color: materialAppLightGreen,
           ),
-          title: Text("Contact us"),
+          title: Text(
+            "Contact us",
+            style: TextStyle(color: materialAppLightGreen),
+          ),
           onTap: () {
             Navigator.pop(context);
             Navigator.of(context)
@@ -102,8 +126,12 @@ Widget getDrawer(BuildContext context) {
             image: AssetImage("assets/images/about.png"),
             width: 25,
             height: 25,
+            color: materialAppLightGreen,
           ),
-          title: Text("About"),
+          title: Text(
+            "About",
+            style: TextStyle(color: materialAppLightGreen),
+          ),
           onTap: () {
             Navigator.pop(context);
             Navigator.of(context)
