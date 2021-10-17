@@ -160,25 +160,30 @@ class _DeedDialogState extends State<DeedDialog> {
                 ),
                 SizedBox(height: 20),
                 Container(
-                    height: 30,
-                    child: ToggleButtons(
-                        children: [
-                          Text("Good"),
-                          Text("Irrelevant"),
-                          Text("Bad")
-                        ],
-                        isSelected: widget._isToggleSelected,
-                        borderRadius: BorderRadius.circular(12),
-                        borderWidth: 1,
-                        selectedColor: materialAppLightGreen,
-                        selectedBorderColor: materialAppLightGreen,
-                        borderColor: materialAppYellow,
-                        onPressed: (int index) => {
-                              setState(() {
-                                widget._isToggleSelected = List.generate(3, (index) => false);
-                                widget._isToggleSelected[index] = true;
-                              })
-                            })),
+                  height: 30,
+                  child: ToggleButtons(
+                      children: [
+                        Text("Good"),
+                        Padding(
+                          padding: EdgeInsets.all(4),
+                          child: Text("Irrelevant"),
+                        ),
+                        Text("Bad")
+                      ],
+                      isSelected: widget._isToggleSelected,
+                      borderRadius: BorderRadius.circular(12),
+                      borderWidth: 1,
+                      selectedColor: materialAppLightGreen,
+                      selectedBorderColor: materialAppLightGreen,
+                      borderColor: materialAppYellow,
+                      onPressed: (int index) => {
+                            setState(() {
+                              widget._isToggleSelected =
+                                  List.generate(3, (index) => false);
+                              widget._isToggleSelected[index] = true;
+                            })
+                          }),
+                ),
                 SizedBox(height: 60),
                 OutlinedButton(
                   onPressed: () {

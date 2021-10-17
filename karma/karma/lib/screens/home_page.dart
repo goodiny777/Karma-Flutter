@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:karma/dialogs/deed_dialog.dart';
 import 'package:karma/general/constants.dart';
 import 'package:karma/general/db.dart';
@@ -136,51 +137,49 @@ class _MyHomePageState extends State<MyHomePage> {
                           imagePath = "assets/images/bad.png";
                           color = materialAppYellow;
                         }
-                        return Dismissible(
-                          background: Container(color: Colors.red),
-                          key: UniqueKey(),
-                          onDismissed: (direction) {
-                            setState(() {
-                              widget._dbProvider.deleteDeed(item?.id ?? -1);
-                            });
-                          },
-                          child: Container(
-                            height: 120,
-                            margin: EdgeInsets.all(5),
-                            child: ListTile(
-                              title: Text(
-                                "Title: $deedTitle",
-                                style: TextStyle(fontSize: 20),
-                              ),
-                              leading: Image(
-                                image: AssetImage(imagePath),
-                                color: color,
-                              ),
-                              trailing: Text("Deed evaluation: ${item?.value}",
-                                  style: TextStyle(fontSize: 16)),
-                              isThreeLine: true,
-                              subtitle: Text(
-                                "Time: ${item?.date?.hour}:${item?.date?.minute}"
-                                "\nDescription: ${item?.description}",
-                                style: TextStyle(fontSize: 16),
-                              ),
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20)),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: color.withOpacity(0.5),
-                                  spreadRadius: 5,
-                                  blurRadius: 7,
-                                  offset: Offset(
-                                      0, 3), // changes position of shadow
+                        return Slidable(
+                            actionPane: SlidableDrawerActionPane(),
+                            actionExtentRatio: 0.25,
+                            child: Container(
+                              height: 120,
+                              margin: EdgeInsets.all(5),
+                              child: ListTile(
+                                title: Text(
+                                  "Title: $deedTitle",
+                                  style: TextStyle(fontSize: 20),
                                 ),
-                              ],
+                                leading: Image(
+                                  image: AssetImage(imagePath),
+                                  color: color,
+                                ),
+                                trailing: Text(
+                                    "Deed evaluation: ${item?.value}",
+                                    style: TextStyle(fontSize: 16)),
+                                isThreeLine: true,
+                                subtitle: Text(
+                                  "Time: ${item?.date?.hour}:${item?.date?.minute}"
+                                  "\nDescription: ${item?.description}",
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20)),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: color.withOpacity(0.5),
+                                    spreadRadius: 5,
+                                    blurRadius: 7,
+                                    offset: Offset(
+                                        0, 3), // changes position of shadow
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        );
+                            actions: swipeActions(item),
+                            secondaryActions:
+                                swipeActions(item).reversed.toList());
                       },
                     );
                   } else {
@@ -204,6 +203,27 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
     );
+  }
+
+  List<Widget> swipeActions(Deed? item) {
+    return <Widget>[
+      IconSlideAction(
+        caption: 'Delete',
+        color: Colors.redAccent,
+        icon: Icons.delete_forever,
+        onTap: () => {
+          setState(() {
+            widget._dbProvider.deleteDeed(item?.id ?? -1);
+          })
+        },
+      ),
+      IconSlideAction(
+        caption: 'Edit',
+        color: materialAppYellow,
+        icon: Icons.edit,
+        onTap: () => {},
+      ),
+    ];
   }
 
   Widget fab() {
